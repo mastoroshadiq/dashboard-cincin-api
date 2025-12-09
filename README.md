@@ -153,7 +153,7 @@ This project is licensed under the MIT License.
 
 ## 👥 Authors
 
-- **Mast Oro Shadiq** - *Initial work*
+- **Mastoro Shadiq** - *Initial work*
 
 ---
 
