@@ -34,13 +34,50 @@ Ganoderma adalah jamur patogen yang menyerang akar kelapa sawit. Karakteristik p
 
 ### 🔥 Mengapa "Cincin Api"?
 
+> **PENTING:** "Api" dalam konteks ini adalah **ANALOGI**, bukan api yang sebenarnya!
+> "Api" yang dimaksud adalah **serangan Ganoderma** yang menyebar seperti api.
+
 Nama "Cincin Api" terinspirasi dari strategi memadamkan kebakaran hutan:
 > *"Untuk menghentikan api, kita tidak hanya memadamkan titik api, tapi juga membuat garis pembatas (firebreak) di sekitarnya."*
 
-Sama halnya dengan Ganoderma:
-- **Titik api** = Pohon yang sudah terinfeksi (MERAH)
-- **Cincin api** = Pohon di sekitarnya yang berisiko (KUNING)
-- **Firebreak** = Tindakan preventif pada pohon berisiko
+**Penjelasan Analogi:**
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ANALOGI CINCIN API                                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│   KEBAKARAN HUTAN              SERANGAN GANODERMA                   │
+│   ══════════════               ═══════════════════                  │
+│                                                                      │
+│   🔥 Titik Api                 🔴 Pohon Terinfeksi Ganoderma         │
+│   (pusat kebakaran)            (persentil rendah + dalam kluster)   │
+│                                                                      │
+│   🟡 Area Berisiko Terbakar    🟡 Pohon Tetangga yang Berisiko       │
+│   (dekat dengan api)           (bersentuhan akar dengan yang sakit) │
+│                                                                      │
+│   🚧 Firebreak                 💉 Tindakan Preventif                 │
+│   (garis pembatas)             (isolasi, sanitasi, monitoring)      │
+│                                                                      │
+│   ✅ Area Aman                 🟢 Pohon Sehat                        │
+│   (jauh dari api)              (persentil tinggi, tidak ada kluster)│
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Mengapa Analogi Ini Relevan?**
+
+| Karakteristik | Kebakaran Hutan | Ganoderma |
+|--------------|-----------------|------------|
+| **Penyebaran** | Menyebar ke pohon terdekat | Menyebar melalui kontak akar |
+| **Pola** | Membentuk kluster | Membentuk kluster |
+| **Pencegahan** | Buat firebreak di sekitar | Isolasi pohon di sekitar |
+| **Prioritas** | Padamkan pusat api dulu | Tangani kluster aktif dulu |
+
+**Kesimpulan:**
+- **"Api"** = Serangan Ganoderma (bukan api literal)
+- **"Cincin"** = Pola penyebaran melingkar dari pusat infeksi
+- **"Cincin Api"** = Strategi mendeteksi dan mengisolasi kluster Ganoderma
 
 ---
 
@@ -57,16 +94,161 @@ Contoh Sederhana:
 - Pohon C: NDRE = 0.58 → Peringkat 90 dari 100 → Persentil = 90%
 ```
 
-### ❓ Analisis 5W1H
+### ❓ Analisis 5W1H Mendalam
 
-| Aspek | Penjelasan |
-|-------|------------|
-| **What** (Apa) | Metode untuk mengkonversi nilai NDRE absolut menjadi ranking persentil (0-100%) relatif terhadap blok |
-| **Why** (Mengapa) | Karena nilai NDRE absolut **tidak dapat dibandingkan langsung** antar blok yang berbeda |
-| **Who** (Siapa) | Diterapkan pada setiap pohon dalam dataset |
-| **When** (Kapan) | Langkah pertama sebelum analisis lanjutan |
-| **Where** (Dimana) | Perhitungan dilakukan **per blok** secara terpisah |
-| **How** (Bagaimana) | `Persentil = (Ranking pohon / Total pohon dalam blok) × 100%` |
+#### 1️⃣ WHAT (Apa)
+
+**Definisi:**
+Ranking Relatif adalah metode normalisasi yang mengkonversi nilai NDRE absolut menjadi ranking persentil (0-100%) relatif terhadap populasi pohon dalam blok yang sama.
+
+**Formula:**
+```
+Persentil = (Jumlah pohon dengan NDRE ≤ pohon ini / Total pohon dalam blok) × 100%
+```
+
+**Output:**
+- Nilai 0-100% untuk setiap pohon
+- Semakin rendah persentil → semakin "sakit" relatif terhadap blok
+- Semakin tinggi persentil → semakin "sehat" relatif terhadap blok
+
+---
+
+#### 2️⃣ WHY (Mengapa)
+
+**Masalah Utama yang Dipecahkan:**
+
+1. **Variasi Antar Blok**
+   - Setiap blok memiliki karakteristik berbeda (umur, varietas, tanah)
+   - Nilai NDRE "normal" berbeda-beda per blok
+   - Threshold absolut tidak adil untuk semua blok
+
+2. **Bias Lingkungan**
+   - Cuaca, musim, kelembaban mempengaruhi NDRE
+   - Blok di area berbeda terpengaruh berbeda
+   - Perbandingan absolut tidak valid
+
+3. **Deteksi Anomali Lokal**
+   - Yang penting bukan nilai absolut, tapi "berbeda dari tetangga"
+   - Pohon dengan NDRE rendah di blok sehat = anomali
+   - Pohon dengan NDRE rendah di blok sakit = normal
+
+---
+
+#### 3️⃣ WHO (Siapa)
+
+**Aktor dan Perannya:**
+
+| Aktor | Peran dalam Pendekatan Ini |
+|-------|---------------------------|
+| **Sistem (Otomatis)** | Menghitung persentil untuk setiap pohon |
+| **Data Analyst** | Memvalidasi distribusi persentil per blok |
+| **Agronomist** | Menginterpretasi hasil dalam konteks kebun |
+| **Field Officer** | Menerima output untuk validasi lapangan |
+
+**Siapa yang Terpengaruh:**
+- Semua pohon dalam dataset (95,030 pohon dalam contoh)
+- Perhitungan dilakukan per blok secara independen
+- Setiap pohon mendapat satu nilai persentil
+
+---
+
+#### 4️⃣ WHEN (Kapan)
+
+**Urutan dalam Pipeline:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: Data Ingestion (Baca CSV)                              │
+│     ↓                                                           │
+│  STEP 2: ★ RANKING RELATIF ★ ← SAAT INI                         │
+│     ↓                                                           │
+│  STEP 3: Elbow Method (Threshold)                               │
+│     ↓                                                           │
+│  STEP 4: Neighbor Analysis                                      │
+│     ↓                                                           │
+│  STEP 5: Classification                                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Kapan Dijalankan:**
+- Setiap kali data baru di-ingest
+- Sebelum analisis lanjutan apapun
+- Tidak perlu diulang jika data tidak berubah
+
+**Frekuensi:**
+- Per run/eksekusi algoritma
+- Biasanya bulanan atau triwulanan (sesuai survei NDRE)
+
+---
+
+#### 5️⃣ WHERE (Dimana)
+
+**Lokasi Eksekusi:**
+
+| Aspek | Lokasi |
+|-------|--------|
+| **Kode** | `src/clustering.py` → fungsi `calculate_percentile_rank()` |
+| **Data** | Per blok (kolom `NOMOR_BLOK`) |
+| **Server** | Lokal atau cloud, tergantung deployment |
+| **Output** | Kolom baru `PERCENTILE_RANK` di DataFrame |
+
+**Batasan Geografis:**
+- Perhitungan **HARUS** per blok, bukan global
+- Setiap blok adalah "universe" tersendiri
+- Cross-block comparison tidak valid untuk persentil
+
+**Contoh Lokasi Data:**
+```
+Blok A001: 1,500 pohon → Persentil dihitung dari 1,500 ini
+Blok A002: 1,200 pohon → Persentil dihitung dari 1,200 ini
+Blok A003: 1,800 pohon → Persentil dihitung dari 1,800 ini
+```
+
+---
+
+#### 6️⃣ HOW (Bagaimana)
+
+**Langkah Detail:**
+
+```python
+def calculate_percentile_rank(df):
+    """
+    Menghitung ranking persentil per blok
+    """
+    hasil = []
+    
+    # Langkah 1: Kelompokkan per blok
+    for blok, grup in df.groupby('NOMOR_BLOK'):
+        
+        # Langkah 2: Urutkan berdasarkan NDRE
+        grup_sorted = grup.sort_values('NDRE')
+        
+        # Langkah 3: Hitung ranking (1 sampai N)
+        n = len(grup_sorted)
+        grup_sorted['RANK'] = range(1, n + 1)
+        
+        # Langkah 4: Konversi ke persentil
+        grup_sorted['PERCENTILE_RANK'] = (grup_sorted['RANK'] / n) * 100
+        
+        hasil.append(grup_sorted)
+    
+    return pd.concat(hasil)
+```
+
+**Visualisasi Proses:**
+
+```
+INPUT (Blok A001):                    OUTPUT (Blok A001):
+┌─────────┬────────┐                  ┌─────────┬────────┬──────────────┐
+│ POHON   │ NDRE   │                  │ POHON   │ NDRE   │ PERCENTILE   │
+├─────────┼────────┤                  ├─────────┼────────┼──────────────┤
+│ P001    │ 0.52   │                  │ P003    │ 0.45   │ 20%          │
+│ P002    │ 0.58   │    ──────▶       │ P001    │ 0.52   │ 40%          │
+│ P003    │ 0.45   │    Sorting       │ P005    │ 0.55   │ 60%          │
+│ P004    │ 0.61   │    & Ranking     │ P002    │ 0.58   │ 80%          │
+│ P005    │ 0.55   │                  │ P004    │ 0.61   │ 100%         │
+└─────────┴────────┘                  └─────────┴────────┴──────────────┘
+```
 
 ### 🤔 Mengapa Tidak Menggunakan Nilai NDRE Langsung?
 
@@ -139,16 +321,196 @@ Bayangkan Anda mengatur volume TV:
 "Siku" ada di sekitar volume 20-50, dimana perubahan paling signifikan.
 ```
 
-### ❓ Analisis 5W1H
+### ❓ Analisis 5W1H Mendalam
 
-| Aspek | Penjelasan |
-|-------|------------|
-| **What** (Apa) | Teknik optimasi untuk menemukan threshold persentil terbaik (5%-30%) |
-| **Why** (Mengapa) | Karena threshold **tidak bisa ditebak** - setiap dataset/kebun berbeda |
-| **Who** (Siapa) | Sistem menjalankan otomatis, tidak perlu input manual |
-| **When** (Kapan) | Setelah ranking relatif, sebelum klasifikasi |
-| **Where** (Dimana) | Simulasi dilakukan pada keseluruhan dataset |
-| **How** (Bagaimana) | Simulasi berbagai threshold → hitung efisiensi → pilih yang optimal |
+#### 1️⃣ WHAT (Apa)
+
+**Definisi:**
+Elbow Method adalah teknik optimasi statistik untuk menemukan nilai threshold persentil optimal secara otomatis, dengan mencari titik "siku" (elbow) pada kurva efisiensi.
+
+**Prinsip Kerja:**
+```
+Threshold Rendah (5%)  → Sedikit suspect → Banyak terlewat
+Threshold Tinggi (50%) → Banyak suspect → Banyak false positive
+Threshold Optimal      → Keseimbangan antara keduanya
+```
+
+**Output:**
+- Satu nilai threshold optimal (contoh: 30%)
+- Kurva simulasi untuk visualisasi
+- Metrik efisiensi per threshold
+
+---
+
+#### 2️⃣ WHY (Mengapa)
+
+**Masalah Utama yang Dipecahkan:**
+
+1. **Threshold Manual Tidak Akurat**
+   - Ahli berbeda memberikan threshold berbeda
+   - Tidak ada standar universal
+   - Intuisi sering salah
+
+2. **Variasi Antar Dataset**
+   - Kebun dengan infeksi berat butuh threshold berbeda
+   - Musim berbeda menghasilkan distribusi NDRE berbeda
+   - Satu threshold tidak cocok untuk semua
+
+3. **Optimasi Trade-off**
+   - Threshold rendah: miss rate rendah, false positive tinggi
+   - Threshold tinggi: miss rate tinggi, false positive rendah
+   - Elbow method: titik keseimbangan optimal
+
+---
+
+#### 3️⃣ WHO (Siapa)
+
+**Aktor dan Perannya:**
+
+| Aktor | Peran dalam Pendekatan Ini |
+|-------|---------------------------|
+| **Sistem (Otomatis)** | Menjalankan simulasi dan memilih threshold optimal |
+| **Data Scientist** | Memvalidasi kurva elbow dan hasil optimasi |
+| **Estate Manager** | Menerima rekomendasi threshold untuk disetujui |
+| **Agronomist** | Memberikan konteks apakah threshold masuk akal |
+
+**Interaksi Antar Aktor:**
+
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   SISTEM     │────▶│   DATA       │────▶│   ESTATE     │
+│   Auto-tune  │     │  SCIENTIST   │     │   MANAGER    │
+│              │     │  Validasi    │     │   Approval   │
+└──────────────┘     └──────────────┘     └──────────────┘
+       │                    │                     │
+       ▼                    ▼                     ▼
+   Threshold           Rekomendasi            Keputusan
+    Optimal            + Justifikasi           Final
+```
+
+---
+
+#### 4️⃣ WHEN (Kapan)
+
+**Urutan dalam Pipeline:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: Data Ingestion (Baca CSV)                              │
+│     ↓                                                           │
+│  STEP 2: Ranking Relatif                                        │
+│     ↓                                                           │
+│  STEP 3: ★ ELBOW METHOD ★ ← SAAT INI                            │
+│     ↓                                                           │
+│  STEP 4: Neighbor Analysis                                      │
+│     ↓                                                           │
+│  STEP 5: Classification                                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Kapan Dijalankan:**
+- Setelah persentil rank dihitung
+- Sebelum klasifikasi pohon
+- Sekali per run (hasil di-cache untuk step selanjutnya)
+
+**Kapan Perlu Re-run:**
+- Data baru di-upload
+- Preset konfigurasi berubah
+- Validasi lapangan menunjukkan threshold kurang optimal
+
+**Frekuensi:**
+- Per eksekusi algoritma
+- Threshold bisa berbeda setiap run tergantung data
+
+---
+
+#### 5️⃣ WHERE (Dimana)
+
+**Lokasi Eksekusi:**
+
+| Aspek | Lokasi |
+|-------|--------|
+| **Kode** | `src/clustering.py` → fungsi `find_optimal_threshold()` |
+| **Simulasi** | Fungsi `simulate_thresholds()` |
+| **Data** | Seluruh dataset (bukan per blok) |
+| **Output** | Variabel `optimal_threshold` dan kurva efisiensi |
+
+**Ruang Simulasi:**
+
+```
+Preset Standar:
+├── threshold_min: 20%
+├── threshold_max: 50%
+├── threshold_step: 5%
+└── Simulasi: 20%, 25%, 30%, 35%, 40%, 45%, 50%
+              (7 titik simulasi)
+```
+
+**Lokasi Penyimpanan Hasil:**
+- Threshold optimal: digunakan langsung di memory
+- Kurva simulasi: disimpan dalam report dan dashboard
+
+---
+
+#### 6️⃣ HOW (Bagaimana)
+
+**Langkah Detail:**
+
+```python
+def find_optimal_threshold(df, config):
+    """
+    Menemukan threshold optimal menggunakan Elbow Method
+    """
+    results = []
+    
+    # Langkah 1: Iterasi setiap threshold
+    for threshold in range(config['threshold_min'], 
+                           config['threshold_max'] + 1, 
+                           config['threshold_step']):
+        
+        # Langkah 2: Tandai pohon suspect
+        suspects = df[df['PERCENTILE_RANK'] <= threshold]
+        
+        # Langkah 3: Hitung tetangga sakit
+        cluster_trees = hitung_tetangga_sakit(suspects, config['min_sick_neighbors'])
+        
+        # Langkah 4: Hitung efisiensi
+        efisiensi = len(cluster_trees) / len(suspects) * 100
+        
+        results.append({
+            'threshold': threshold,
+            'total_suspect': len(suspects),
+            'cluster_valid': len(cluster_trees),
+            'efisiensi': efisiensi
+        })
+    
+    # Langkah 5: Pilih threshold dengan efisiensi tertinggi
+    optimal = max(results, key=lambda x: x['efisiensi'])
+    
+    return optimal['threshold']
+```
+
+**Visualisasi Proses Elbow:**
+
+```
+                    KURVA EFISIENSI
+    
+Efisiensi (%)
+    50 │                    ╭────╮
+       │                 ╭──╯    ╰──╮
+    45 │              ╭──╯          ╰──╮
+       │           ╭──╯                ╰──
+    40 │        ╭──╯                      
+       │     ╭──╯                         
+    35 │  ╭──╯                            
+       │──╯                               
+    30 │                                  
+       └──────────────────────────────────
+        10%  15%  20%  25%  30%  35%  40%
+                         ↑
+                    ELBOW POINT
+                   (Threshold Optimal)
+```
 
 ### 🤔 Mengapa Tidak Menggunakan Threshold Tetap?
 
@@ -251,16 +613,240 @@ Pola Tanam Mata Lima (Hexagonal):
 Setiap pohon memiliki 6 tetangga terdekat
 ```
 
-### ❓ Analisis 5W1H
+### ❓ Analisis 5W1H Mendalam
 
-| Aspek | Penjelasan |
-|-------|------------|
-| **What** (Apa) | Analisis spasial untuk menghitung jumlah tetangga "sakit" dari setiap pohon |
-| **Why** (Mengapa) | Karena Ganoderma **menyebar melalui kontak akar** → membentuk kluster |
-| **Who** (Siapa) | Diterapkan pada setiap pohon yang terdeteksi sebagai suspect |
-| **When** (Kapan) | Setelah threshold ditentukan, sebelum klasifikasi final |
-| **Where** (Dimana) | Menggunakan koordinat Baris (N_BARIS) dan Pokok (N_POKOK) |
-| **How** (Bagaimana) | Identifikasi 6 tetangga → hitung yang suspect → tentukan status |
+#### 1️⃣ WHAT (Apa)
+
+**Definisi:**
+Analisis Tetangga Hexagonal adalah metode spasial untuk menghitung jumlah pohon "sakit" (suspect) di sekitar setiap pohon, berdasarkan pola tanam hexagonal (mata lima) yang digunakan di perkebunan kelapa sawit.
+
+**Konsep Kunci:**
+- Setiap pohon memiliki **6 tetangga** dalam pola hexagonal
+- Tetangga ditentukan berdasarkan koordinat baris (N_BARIS) dan pokok (N_POKOK)
+- Pohon dianggap **bagian kluster** jika memiliki ≥3 tetangga yang juga suspect
+
+**Output:**
+- Kolom `SICK_NEIGHBORS`: jumlah tetangga suspect (0-6)
+- Kolom `IS_CLUSTER`: boolean apakah termasuk kluster
+
+---
+
+#### 2️⃣ WHY (Mengapa)
+
+**Masalah Utama yang Dipecahkan:**
+
+1. **Penyebaran Ganoderma via Kontak Akar**
+   - Ganoderma menyebar melalui kontak akar ke akar
+   - Pohon yang berdekatan lebih mungkin terinfeksi
+   - Pohon terisolasi kemungkinan bukan Ganoderma (bisa kekurangan nutrisi, dll)
+
+2. **Membedakan Kluster vs Noise**
+   ```
+   KLUSTER (Valid):              NOISE (False Positive):
+   
+       🔴     🔴                      🟢     🟢
+    🔴    🔴    🔴                 🟢    🔴    🟢
+       🔴     🔴                      🟢     🟢
+   
+   Pohon merah berkelompok       Pohon merah sendirian
+   = Kemungkinan Ganoderma       = Kemungkinan bukan Ganoderma
+   ```
+
+3. **Mengurangi False Positive**
+   - Tidak semua pohon dengan NDRE rendah adalah Ganoderma
+   - Bisa karena: kekurangan air, hama lain, kerusakan fisik
+   - Filter dengan analisis tetangga mengurangi kesalahan
+
+---
+
+#### 3️⃣ WHO (Siapa)
+
+**Aktor dan Perannya:**
+
+| Aktor | Peran dalam Pendekatan Ini |
+|-------|---------------------------|
+| **Sistem (Otomatis)** | Menghitung tetangga untuk setiap pohon |
+| **Surveyor Lapangan** | Memvalidasi apakah kluster benar-benar Ganoderma |
+| **Agronomist** | Menginterpretasi pola spasial dalam konteks kebun |
+| **GIS Specialist** | Memastikan koordinat dan pola tanam akurat |
+
+**Siapa yang Terpengaruh:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  POHON SUSPECT (persentil ≤ threshold)                          │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │                                                              ││
+│  │  Dengan ≥3 tetangga suspect  →  MERAH (Kluster Aktif)       ││
+│  │                                                              ││
+│  │  Dengan 1-2 tetangga suspect →  KUNING (Risiko Tinggi)      ││
+│  │                                                              ││
+│  │  Dengan 0 tetangga suspect   →  ORANYE (Noise/Investigasi)  ││
+│  │                                                              ││
+│  └─────────────────────────────────────────────────────────────┘│
+│                                                                  │
+│  POHON NON-SUSPECT (persentil > threshold)                      │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │  Tidak dianalisis → langsung HIJAU (Sehat)                  ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+#### 4️⃣ WHEN (Kapan)
+
+**Urutan dalam Pipeline:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: Data Ingestion (Baca CSV)                              │
+│     ↓                                                           │
+│  STEP 2: Ranking Relatif                                        │
+│     ↓                                                           │
+│  STEP 3: Elbow Method (Threshold)                               │
+│     ↓                                                           │
+│  STEP 4: ★ NEIGHBOR ANALYSIS ★ ← SAAT INI                       │
+│     ↓                                                           │
+│  STEP 5: Classification                                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Kapan Dijalankan:**
+- Setelah threshold optimal ditentukan
+- Sebelum klasifikasi final
+- Hanya untuk pohon suspect (persentil ≤ threshold)
+
+**Durasi:**
+- Tergantung jumlah pohon suspect
+- Biasanya beberapa detik untuk 10,000-20,000 pohon
+
+**Kapan Hasil Berubah:**
+- Jika threshold berubah → suspect berubah → tetangga berubah
+- Jika data koordinat diperbaiki
+- Jika parameter min_sick_neighbors berubah
+
+---
+
+#### 5️⃣ WHERE (Dimana)
+
+**Lokasi Eksekusi:**
+
+| Aspek | Lokasi |
+|-------|--------|
+| **Kode** | `src/clustering.py` → fungsi `get_hexagonal_neighbors()` |
+| **Klasifikasi** | `classify_trees_with_clustering()` |
+| **Data Input** | Kolom `N_BARIS`, `N_POKOK` per blok |
+| **Data Output** | Kolom `SICK_NEIGHBORS`, `IS_CLUSTER` |
+
+**Lokasi Geografis:**
+
+```
+KOORDINAT DALAM DATA:
+┌─────────────────────────────────────────────────────────────────┐
+│  BLOK A001                                                       │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                                                            │  │
+│  │  N_POKOK →  1     2     3     4     5     6     7         │  │
+│  │           ┌─────────────────────────────────────────┐     │  │
+│  │  N_BARIS  │                                         │     │  │
+│  │     ↓     │                                         │     │  │
+│  │     1     │  🌴     🌴     🌴     🌴     🌴     🌴  │     │  │
+│  │     2     │     🌴     🌴     🌴     🌴     🌴      │     │  │
+│  │     3     │  🌴     🌴     🌴     🌴     🌴     🌴  │     │  │
+│  │     4     │     🌴     🌴     🌴     🌴     🌴      │     │  │
+│  │           └─────────────────────────────────────────┘     │  │
+│  │                                                            │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Batasan:**
+- Analisis dilakukan **per blok** (tetangga tidak cross-block)
+- Pohon di tepi blok memiliki tetangga < 6
+
+---
+
+#### 6️⃣ HOW (Bagaimana)
+
+**Langkah Detail:**
+
+```python
+def get_hexagonal_neighbors(baris, pokok):
+    """
+    Mendapatkan 6 tetangga hexagonal berdasarkan odd-row offset
+    """
+    if baris % 2 == 1:  # Baris GANJIL
+        neighbors = [
+            (baris - 1, pokok - 1),  # Kiri Atas
+            (baris - 1, pokok),      # Kanan Atas
+            (baris,     pokok - 1),  # Kiri
+            (baris,     pokok + 1),  # Kanan
+            (baris + 1, pokok - 1),  # Kiri Bawah
+            (baris + 1, pokok),      # Kanan Bawah
+        ]
+    else:  # Baris GENAP
+        neighbors = [
+            (baris - 1, pokok),      # Kiri Atas
+            (baris - 1, pokok + 1),  # Kanan Atas
+            (baris,     pokok - 1),  # Kiri
+            (baris,     pokok + 1),  # Kanan
+            (baris + 1, pokok),      # Kiri Bawah
+            (baris + 1, pokok + 1),  # Kanan Bawah
+        ]
+    return neighbors
+
+def count_sick_neighbors(pohon, df_suspects):
+    """
+    Menghitung jumlah tetangga yang juga suspect
+    """
+    neighbors = get_hexagonal_neighbors(pohon['N_BARIS'], pohon['N_POKOK'])
+    
+    sick_count = 0
+    for baris, pokok in neighbors:
+        # Cek apakah tetangga ada di daftar suspect
+        is_neighbor_sick = ((df_suspects['N_BARIS'] == baris) & 
+                            (df_suspects['N_POKOK'] == pokok) &
+                            (df_suspects['NOMOR_BLOK'] == pohon['NOMOR_BLOK'])).any()
+        if is_neighbor_sick:
+            sick_count += 1
+    
+    return sick_count
+```
+
+**Visualisasi Proses:**
+
+```
+INPUT: Pohon di baris 3, pokok 4 (baris ganjil)
+
+LANGKAH 1: Identifikasi 6 tetangga
+┌─────────────────────────────────────────┐
+│                                          │
+│     [2,3]     [2,4]     ← Tetangga atas │
+│         \     /                          │
+│    [3,3]—[3,4]—[3,5]    ← Pohon target  │
+│         /     \                          │
+│     [4,3]     [4,4]     ← Tetangga bawah│
+│                                          │
+└─────────────────────────────────────────┘
+
+LANGKAH 2: Cek status setiap tetangga
+┌─────────────────────────────────────────┐
+│  Tetangga      │ Suspect? │ Status      │
+│  ──────────────┼──────────┼─────────────│
+│  [2,3]         │    Ya    │ SAKIT       │
+│  [2,4]         │   Tidak  │ SEHAT       │
+│  [3,3]         │    Ya    │ SAKIT       │
+│  [3,5]         │    Ya    │ SAKIT       │
+│  [4,3]         │   Tidak  │ SEHAT       │
+│  [4,4]         │    Ya    │ SAKIT       │
+└─────────────────────────────────────────┘
+
+LANGKAH 3: Hitung total
+Total tetangga sakit = 4
+Threshold kluster = 3
+→ 4 ≥ 3 → POHON INI ADALAH BAGIAN KLUSTER (MERAH)
+```
 
 ### 🤔 Mengapa Menggunakan Pola Hexagonal?
 
@@ -384,16 +970,257 @@ Threshold default: ≥3 tetangga sakit = KLUSTER
 🟢 HIJAU  - Sehat             → Normal
 ```
 
-### ❓ Analisis 5W1H
+### ❓ Analisis 5W1H Mendalam
 
-| Aspek | Penjelasan |
-|-------|------------|
-| **What** (Apa) | Sistem kategorisasi 4 level untuk prioritas tindakan |
-| **Why** (Mengapa) | Karena **tidak semua pohon sakit sama berbahayanya** - perlu prioritas |
-| **Who** (Siapa) | Setiap pohon mendapat satu label klasifikasi |
-| **When** (Kapan) | Langkah terakhir setelah semua analisis selesai |
-| **Where** (Dimana) | Output final untuk laporan dan visualisasi |
-| **How** (Bagaimana) | Decision tree berdasarkan persentil dan jumlah tetangga |
+#### 1️⃣ WHAT (Apa)
+
+**Definisi:**
+Klasifikasi 4-Tier adalah sistem pengelompokan pohon menjadi 4 kategori prioritas berdasarkan kombinasi **ranking persentil** dan **jumlah tetangga sakit**.
+
+**4 Kategori:**
+
+| Tier | Warna | Nama | Kriteria | Prioritas |
+|------|-------|------|----------|-----------|
+| 1 | 🔴 | MERAH | Persentil ≤ threshold DAN ≥3 tetangga sakit | Tertinggi |
+| 2 | 🟡 | KUNING | Persentil ≤ threshold DAN 1-2 tetangga sakit | Tinggi |
+| 3 | 🟠 | ORANYE | Persentil ≤ threshold DAN 0 tetangga sakit | Sedang |
+| 4 | 🟢 | HIJAU | Persentil > threshold | Normal |
+
+**Output:**
+- Kolom `STATUS`: MERAH/KUNING/ORANYE/HIJAU
+- Statistik per blok dan per tier
+- Visualisasi peta warna
+
+---
+
+#### 2️⃣ WHY (Mengapa)
+
+**Masalah Utama yang Dipecahkan:**
+
+1. **Klasifikasi Biner Tidak Cukup**
+   - Sakit/Sehat terlalu sederhana
+   - Tidak semua pohon "sakit" sama berbahayanya
+   - Perlu diferensiasi untuk alokasi sumber daya
+
+2. **Prioritas Tindakan Berbeda**
+   ```
+   ┌─────────────────────────────────────────────────────────────┐
+   │                   URGENSI TINDAKAN                          │
+   │                                                              │
+   │  MERAH (Kluster)  ████████████████████████  Sangat Urgent   │
+   │  KUNING (Risiko)  ████████████████          Urgent          │
+   │  ORANYE (Noise)   ████████                  Perlu Validasi  │
+   │  HIJAU (Sehat)                              Normal          │
+   │                                                              │
+   └─────────────────────────────────────────────────────────────┘
+   ```
+
+3. **Optimasi Sumber Daya**
+   - Budget terbatas → fokus ke MERAH dulu
+   - Tim lapangan terbatas → prioritaskan kluster aktif
+   - Waktu terbatas → tindakan bertahap per tier
+
+---
+
+#### 3️⃣ WHO (Siapa)
+
+**Aktor dan Perannya:**
+
+| Aktor | Peran dalam Pendekatan Ini |
+|-------|---------------------------|
+| **Sistem (Otomatis)** | Memberikan label tier untuk setiap pohon |
+| **Field Supervisor** | Memimpin tim validasi lapangan per tier |
+| **Field Officer** | Melakukan validasi dan tindakan di lapangan |
+| **Estate Manager** | Mengalokasikan budget per tier |
+| **Agronomist** | Menentukan protokol tindakan per tier |
+
+**Siapa yang Menerima Output per Tier:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    DISTRIBUSI OUTPUT                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  🔴 MERAH → Tim Sanitasi                                        │
+│             Tindakan: Penumbangan, isolasi, pemberian fungisida │
+│             Timeline: Segera (< 1 minggu)                       │
+│                                                                  │
+│  🟡 KUNING → Tim Monitoring                                     │
+│             Tindakan: Inspeksi rutin, pencatatan perkembangan   │
+│             Timeline: Mingguan                                  │
+│                                                                  │
+│  🟠 ORANYE → Tim Investigasi                                    │
+│             Tindakan: Validasi lapangan, diagnosis penyebab     │
+│             Timeline: Bulanan                                   │
+│                                                                  │
+│  🟢 HIJAU → Tidak ada aksi khusus                               │
+│             Tindakan: Perawatan normal                          │
+│             Timeline: Rutinitas biasa                           │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+#### 4️⃣ WHEN (Kapan)
+
+**Urutan dalam Pipeline:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: Data Ingestion (Baca CSV)                              │
+│     ↓                                                           │
+│  STEP 2: Ranking Relatif                                        │
+│     ↓                                                           │
+│  STEP 3: Elbow Method (Threshold)                               │
+│     ↓                                                           │
+│  STEP 4: Neighbor Analysis                                      │
+│     ↓                                                           │
+│  STEP 5: ★ KLASIFIKASI 4-TIER ★ ← SAAT INI                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Kapan Dijalankan:**
+- Langkah terakhir dalam pipeline algoritma
+- Setelah semua data tersedia (persentil + tetangga)
+- Sekali per run
+
+**Kapan Status Berubah:**
+- Data NDRE baru → persentil berubah → status bisa berubah
+- Threshold berubah → kategori suspect berubah
+- Parameter min_sick_neighbors berubah → klasifikasi tier berubah
+
+**Timeline Penggunaan Output:**
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    TIMELINE TINDAKAN                              │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  Hari 1-7:    Validasi dan tindakan MERAH                        │
+│               ↓                                                   │
+│  Minggu 2-4:  Monitoring intensif KUNING                         │
+│               ↓                                                   │
+│  Bulan 1-3:   Investigasi ORANYE                                 │
+│               ↓                                                   │
+│  Triwulanan:  Review keseluruhan, run ulang algoritma            │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+#### 5️⃣ WHERE (Dimana)
+
+**Lokasi Eksekusi:**
+
+| Aspek | Lokasi |
+|-------|--------|
+| **Kode** | `src/clustering.py` → fungsi `classify_trees_with_clustering()` |
+| **Data Input** | DataFrame dengan kolom `PERCENTILE_RANK` dan `SICK_NEIGHBORS` |
+| **Data Output** | Kolom `STATUS` (MERAH/KUNING/ORANYE/HIJAU) |
+| **Visualisasi** | `src/dashboard.py` → peta warna per tier |
+
+**Lokasi Penggunaan Output:**
+
+```
+OUTPUT KLASIFIKASI DIGUNAKAN DI:
+
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│    DASHBOARD     │     │    LAPORAN       │     │    EKSPOR        │
+│    (PNG)         │     │    (HTML/MD)     │     │    (CSV)         │
+├──────────────────┤     ├──────────────────┤     ├──────────────────┤
+│ • Peta warna     │     │ • Statistik tier │     │ • Data per pohon │
+│ • Distribusi pie │     │ • Top 10 blok    │     │ • Filter by tier │
+│ • Block details  │     │ • Rekomendasi    │     │ • Untuk GIS      │
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+```
+
+---
+
+#### 6️⃣ HOW (Bagaimana)
+
+**Decision Tree:**
+
+```
+                        ┌─────────────────────┐
+                        │   POHON MASUK       │
+                        └──────────┬──────────┘
+                                   │
+                    ┌──────────────▼──────────────┐
+                    │  Persentil ≤ threshold?     │
+                    └──────────────┬──────────────┘
+                                   │
+               ┌───────────────────┴───────────────────┐
+               │ YA                                TIDAK│
+               ▼                                       ▼
+    ┌──────────────────────┐               ┌──────────────────┐
+    │  SUSPECT             │               │     🟢 HIJAU     │
+    │  (Perlu analisis     │               │     (Sehat)      │
+    │   tetangga)          │               └──────────────────┘
+    └──────────┬───────────┘
+               │
+    ┌──────────▼──────────┐
+    │ Hitung tetangga     │
+    │ sakit (0-6)         │
+    └──────────┬──────────┘
+               │
+    ┌──────────┴──────────┬──────────────────┐
+    │                     │                   │
+    ▼                     ▼                   ▼
+≥3 tetangga         1-2 tetangga         0 tetangga
+    │                     │                   │
+    ▼                     ▼                   ▼
+┌────────┐          ┌────────┐          ┌────────┐
+│🔴 MERAH│          │🟡 KUNING│          │🟠 ORANYE│
+│ Kluster│          │ Risiko │          │  Noise │
+└────────┘          └────────┘          └────────┘
+```
+
+**Implementasi Kode:**
+
+```python
+def classify_trees_with_clustering(df, threshold, min_sick_neighbors=3):
+    """
+    Klasifikasi 4-Tier berdasarkan persentil dan tetangga
+    """
+    def classify_row(row):
+        # Langkah 1: Cek apakah suspect
+        if row['PERCENTILE_RANK'] > threshold:
+            return 'HIJAU'  # Tidak suspect = Sehat
+        
+        # Langkah 2: Cek jumlah tetangga sakit
+        sick_neighbors = row['SICK_NEIGHBORS']
+        
+        if sick_neighbors >= min_sick_neighbors:
+            return 'MERAH'   # Kluster aktif
+        elif sick_neighbors >= 1:
+            return 'KUNING'  # Risiko tinggi
+        else:
+            return 'ORANYE'  # Noise/terisolasi
+    
+    df['STATUS'] = df.apply(classify_row, axis=1)
+    return df
+```
+
+**Contoh Output:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  HASIL KLASIFIKASI (Contoh: 95,030 pohon, threshold 30%)        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  STATUS   │  JUMLAH  │  PERSENTASE │  KETERANGAN                │
+│  ─────────┼──────────┼─────────────┼────────────────────────────│
+│  🔴 MERAH │  11,291  │    11.89%   │  Kluster aktif Ganoderma   │
+│  🟡 KUNING│  14,074  │    14.81%   │  Tetangga kluster, risiko  │
+│  🟠 ORANYE│   3,163  │     3.33%   │  Suspect terisolasi        │
+│  🟢 HIJAU │  66,502  │    69.98%   │  Sehat/normal              │
+│  ─────────┼──────────┼─────────────┼────────────────────────────│
+│  TOTAL    │  95,030  │   100.00%   │                            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### 🤔 Mengapa 4 Tier, Bukan 2 (Sakit/Sehat)?
 
