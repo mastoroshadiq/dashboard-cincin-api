@@ -370,7 +370,110 @@ def create_superimpose_visualization(all_results: Dict, output_dir: Path):
     return sorted_blocks
 
 
-def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi_name: str):
+def generate_block_cluster_maps(all_results: Dict, output_dir: Path, top_n: int = 5):
+    """
+    Generate cluster maps for top N blocks for each preset.
+    
+    Args:
+        all_results: Dictionary with results per preset
+        output_dir: Output directory
+        top_n: Number of top blocks to visualize
+        
+    Returns:
+        Dictionary mapping preset -> list of block image paths
+    """
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    
+    logger.info(f"Generating cluster maps for top {top_n} blocks per preset...")
+    
+    block_maps = {}
+    
+    for preset_name, result in all_results.items():
+        df = result['df']
+        preset_info = PRESET_INFO[preset_name]
+        
+        # Get top N blocks by MERAH count
+        merah_per_block = df[
+            df['Status_Risiko'] == 'MERAH (KLUSTER AKTIF)'
+        ].groupby('Blok').size().sort_values(ascending=False)
+        
+        top_blocks = merah_per_block.head(top_n).index.tolist()
+        block_maps[preset_name] = []
+        
+        for idx, blok in enumerate(top_blocks, 1):
+            df_block = df[df['Blok'] == blok].copy()
+            
+            if len(df_block) == 0:
+                continue
+            
+            fig, ax = plt.subplots(figsize=(12, 10))
+            
+            # Define colors for each status
+            status_colors = {
+                'MERAH (KLUSTER AKTIF)': '#e74c3c',
+                'ORANYE (CINCIN API)': '#f39c12',
+                'KUNING (SUSPECT TERISOLASI)': '#f1c40f',
+                'HIJAU (SEHAT)': '#27ae60'
+            }
+            
+            # Plot each status group
+            for status, color in status_colors.items():
+                mask = df_block['Status_Risiko'] == status
+                if mask.sum() > 0:
+                    ax.scatter(
+                        df_block.loc[mask, 'N_BARIS'],
+                        df_block.loc[mask, 'N_POKOK'],
+                        c=color,
+                        s=50,
+                        alpha=0.7,
+                        label=status.split('(')[0].strip()
+                    )
+            
+            # Add title and labels
+            merah_count = (df_block['Status_Risiko'] == 'MERAH (KLUSTER AKTIF)').sum()
+            oranye_count = (df_block['Status_Risiko'] == 'ORANYE (CINCIN API)').sum()
+            
+            ax.set_title(
+                f"BLOK {blok} - {preset_info['display_name'].upper()}\n"
+                f"MERAH: {merah_count} | ORANYE: {oranye_count}",
+                fontsize=14, fontweight='bold', color=preset_info['color']
+            )
+            ax.set_xlabel('Baris', fontsize=11)
+            ax.set_ylabel('Pokok', fontsize=11)
+            ax.legend(loc='upper right', fontsize=9)
+            ax.grid(True, alpha=0.3)
+            ax.set_facecolor('#f8f9fa')
+            
+            # Add preset indicator
+            ax.text(
+                0.02, 0.98, f"{preset_info['icon']} {preset_info['display_name']}",
+                transform=ax.transAxes, fontsize=12, fontweight='bold',
+                verticalalignment='top', color=preset_info['color'],
+                bbox=dict(boxstyle='round', facecolor='white', alpha=0.8)
+            )
+            
+            plt.tight_layout()
+            
+            # Save
+            filename = f"cluster_map_{preset_name}_{idx:02d}_{blok}.png"
+            filepath = output_dir / filename
+            fig.savefig(filepath, dpi=120, bbox_inches='tight', facecolor='white')
+            plt.close(fig)
+            
+            block_maps[preset_name].append({
+                'filename': filename,
+                'blok': blok,
+                'merah': merah_count,
+                'oranye': oranye_count
+            })
+            
+            logger.info(f"  Saved: {filename}")
+    
+    return block_maps
+
+
+def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi_name: str, block_maps: Dict = None):
     """
     Generate interactive HTML report with toggle filters for each preset.
     
@@ -378,6 +481,7 @@ def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi
         output_dir: Output directory
         all_results: Dictionary with results per preset
         divisi_name: Name of divisi being analyzed
+        block_maps: Dictionary of block cluster map images per preset
     """
     logger.info("Generating interactive HTML report with toggle filters...")
     
@@ -905,6 +1009,266 @@ def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi
             margin-top: 30px;
         }}
         
+        /* Lightbox for fullscreen zoom */
+        .lightbox {{
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }}
+        
+        .lightbox.active {{
+            display: flex;
+        }}
+        
+        .lightbox-content {{
+            max-width: 95%;
+            max-height: 85%;
+            position: relative;
+        }}
+        
+        .lightbox-content img {{
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }}
+        
+        .lightbox-title {{
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2em;
+        }}
+        
+        .lightbox-close {{
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.3s ease;
+        }}
+        
+        .lightbox-close:hover {{
+            color: #e74c3c;
+            transform: scale(1.2);
+        }}
+        
+        .lightbox-nav {{
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            padding: 20px;
+            transition: all 0.3s ease;
+            user-select: none;
+        }}
+        
+        .lightbox-nav:hover {{
+            color: #3498db;
+        }}
+        
+        .lightbox-prev {{
+            left: 20px;
+        }}
+        
+        .lightbox-next {{
+            right: 20px;
+        }}
+        
+        .lightbox-counter {{
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }}
+        
+        .lightbox-zoom-controls {{
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }}
+        
+        .lightbox-zoom-btn {{
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }}
+        
+        .lightbox-zoom-btn:hover {{
+            background: rgba(255,255,255,0.3);
+        }}
+        
+        /* Image container with zoom icon */
+        .viz-item {{
+            text-align: center;
+            position: relative;
+        }}
+        
+        .viz-item img {{
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }}
+        
+        .viz-item img:hover {{
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }}
+        
+        .viz-item .zoom-icon {{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }}
+        
+        .viz-item:hover .zoom-icon {{
+            opacity: 1;
+        }}
+        
+        .viz-item h4 {{
+            margin-top: 10px;
+            color: #aaa;
+        }}
+        
+        /* Block Maps Section */
+        .block-maps {{
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }}
+        
+        .block-maps h3 {{
+            margin-bottom: 20px;
+            text-align: center;
+        }}
+        
+        .block-maps-tabs {{
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }}
+        
+        .block-maps-tab {{
+            padding: 12px 25px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }}
+        
+        .block-maps-tab.konservatif {{
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--konservatif);
+        }}
+        
+        .block-maps-tab.standar {{
+            background: rgba(39, 174, 96, 0.2);
+            color: var(--standar);
+        }}
+        
+        .block-maps-tab.agresif {{
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--agresif);
+        }}
+        
+        .block-maps-tab.active {{
+            border-color: currentColor;
+            transform: scale(1.05);
+        }}
+        
+        .block-maps-tab:hover {{
+            transform: scale(1.05);
+        }}
+        
+        .block-maps-content {{
+            display: none;
+        }}
+        
+        .block-maps-content.active {{
+            display: block;
+        }}
+        
+        .block-maps-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }}
+        
+        .block-map-item {{
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }}
+        
+        .block-map-item:hover {{
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }}
+        
+        .block-map-item img {{
+            width: 100%;
+            cursor: pointer;
+        }}
+        
+        .block-map-info {{
+            padding: 15px;
+            text-align: center;
+        }}
+        
+        .block-map-info h4 {{
+            margin-bottom: 5px;
+        }}
+        
+        .block-map-info .stats {{
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.9em;
+        }}
+        
+        .block-map-info .stat-merah {{
+            color: var(--merah);
+        }}
+        
+        .block-map-info .stat-oranye {{
+            color: var(--oranye);
+        }}
+        
         @media (max-width: 768px) {{
             .preset-cards {{
                 grid-template-columns: 1fr;
@@ -921,6 +1285,15 @@ def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi
             header .meta-info {{
                 flex-direction: column;
                 gap: 15px;
+            }}
+            
+            .block-maps-grid {{
+                grid-template-columns: 1fr;
+            }}
+            
+            .lightbox-nav {{
+                font-size: 30px;
+                padding: 10px;
             }}
         }}
     </style>
@@ -985,35 +1358,118 @@ def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi
         
         <!-- Superimpose Visualizations -->
         <section class="visualizations">
-            <h3>📈 Visualisasi Perbandingan (Superimpose)</h3>
+            <h3>📈 Visualisasi Perbandingan (Superimpose) - Klik gambar untuk fullscreen</h3>
             <div class="viz-grid">
-                <div class="viz-item">
-                    <img src="superimpose_bar_comparison.png" alt="Bar Comparison">
+                <div class="viz-item" onclick="openLightbox(0)">
+                    <span class="zoom-icon">🔍 Klik untuk zoom</span>
+                    <img src="superimpose_bar_comparison.png" alt="Bar Comparison" data-title="Perbandingan Deteksi Kluster Aktif per Blok">
                     <h4>Perbandingan Deteksi Kluster Aktif per Blok</h4>
                 </div>
-                <div class="viz-item">
-                    <img src="superimpose_line_trend.png" alt="Line Trend">
+                <div class="viz-item" onclick="openLightbox(1)">
+                    <span class="zoom-icon">🔍 Klik untuk zoom</span>
+                    <img src="superimpose_line_trend.png" alt="Line Trend" data-title="Trend Deteksi Antar Preset">
                     <h4>Trend Deteksi Antar Preset</h4>
                 </div>
-                <div class="viz-item">
-                    <img src="superimpose_stacked_status.png" alt="Stacked Status">
+                <div class="viz-item" onclick="openLightbox(2)">
+                    <span class="zoom-icon">🔍 Klik untuk zoom</span>
+                    <img src="superimpose_stacked_status.png" alt="Stacked Status" data-title="Distribusi Status per Blok">
                     <h4>Distribusi Status per Blok</h4>
                 </div>
-                <div class="viz-item">
-                    <img src="superimpose_radar_comparison.png" alt="Radar Comparison">
+                <div class="viz-item" onclick="openLightbox(3)">
+                    <span class="zoom-icon">🔍 Klik untuk zoom</span>
+                    <img src="superimpose_radar_comparison.png" alt="Radar Comparison" data-title="Radar Perbandingan Preset">
                     <h4>Radar Perbandingan Preset</h4>
                 </div>
-                <div class="viz-item" style="grid-column: span 2;">
-                    <img src="superimpose_logistics_comparison.png" alt="Logistics Comparison">
+                <div class="viz-item" style="grid-column: span 2;" onclick="openLightbox(4)">
+                    <span class="zoom-icon">🔍 Klik untuk zoom</span>
+                    <img src="superimpose_logistics_comparison.png" alt="Logistics Comparison" data-title="Perbandingan Kebutuhan Logistik">
                     <h4>Perbandingan Kebutuhan Logistik</h4>
                 </div>
             </div>
-        </section>
+        </section>'''
+    
+    # Build block maps section if available
+    block_maps_html = ""
+    if block_maps:
+        tabs_html = ""
+        contents_html = ""
         
+        for preset_name in ['konservatif', 'standar', 'agresif']:
+            preset_info = PRESET_INFO[preset_name]
+            active_class = "active" if preset_name == "standar" else ""
+            
+            tabs_html += f'''
+                <div class="block-maps-tab {preset_name} {active_class}" 
+                     onclick="switchBlockMapTab('{preset_name}')">
+                    {preset_info['icon']} {preset_info['display_name']}
+                </div>
+            '''
+            
+            maps_grid = ""
+            if preset_name in block_maps:
+                for map_info in block_maps[preset_name]:
+                    maps_grid += f'''
+                        <div class="block-map-item">
+                            <img src="{map_info['filename']}" 
+                                 alt="Blok {map_info['blok']}"
+                                 onclick="openBlockMapLightbox('{map_info['filename']}', 'Blok {map_info['blok']} - {preset_info['display_name']}')">
+                            <div class="block-map-info">
+                                <h4>Blok {map_info['blok']}</h4>
+                                <div class="stats">
+                                    <span class="stat-merah">🔴 MERAH: {map_info['merah']}</span>
+                                    <span class="stat-oranye">🟠 ORANYE: {map_info['oranye']}</span>
+                                </div>
+                            </div>
+                        </div>
+                    '''
+            
+            contents_html += f'''
+                <div class="block-maps-content {preset_name} {active_class}">
+                    <div class="block-maps-grid">
+                        {maps_grid}
+                    </div>
+                </div>
+            '''
+        
+        block_maps_html = f'''
+        <!-- Block Cluster Maps -->
+        <section class="block-maps">
+            <h3>🗺️ Peta Kluster Ganoderma per Blok (Top 5) - Klik gambar untuk fullscreen</h3>
+            <div class="block-maps-tabs">
+                {tabs_html}
+            </div>
+            {contents_html}
+        </section>
+        '''
+    
+    html_content += block_maps_html
+    
+    html_content += f'''
         <footer>
             <p>Generated by POAC v3.3 Simulation Engine - Algoritma Cincin Api</p>
             <p>© 2025 - Ganoderma Detection System</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                💡 Tips: Tekan tombol 1, 2, 3 untuk toggle preset | Klik gambar untuk fullscreen | ESC untuk keluar
+            </p>
         </footer>
+    </div>
+    
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)">&#10094;</span>
+        <span class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)">&#10095;</span>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="">
+            <div class="lightbox-title" id="lightbox-title"></div>
+            <div class="lightbox-counter" id="lightbox-counter"></div>
+        </div>
+        <div class="lightbox-zoom-controls">
+            <button class="lightbox-zoom-btn" onclick="zoomLightbox(0.8)">➖ Zoom Out</button>
+            <button class="lightbox-zoom-btn" onclick="zoomLightbox(1)">↺ Reset</button>
+            <button class="lightbox-zoom-btn" onclick="zoomLightbox(1.2)">➕ Zoom In</button>
+            <button class="lightbox-zoom-btn" onclick="downloadImage()">💾 Download</button>
+        </div>
     </div>
     
     <script>
@@ -1033,8 +1489,86 @@ def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi
                 toggleItem.classList.add('active');
                 card.classList.remove('hidden');
             }}
+        }}
+        
+        // Block maps tab switching
+        function switchBlockMapTab(preset) {{
+            document.querySelectorAll('.block-maps-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.block-maps-content').forEach(content => content.classList.remove('active'));
             
-            console.log('Active presets:', Array.from(activePresets));
+            document.querySelector(`.block-maps-tab.${{preset}}`).classList.add('active');
+            document.querySelector(`.block-maps-content.${{preset}}`).classList.add('active');
+        }}
+        
+        // Lightbox functionality
+        const images = [
+            {{ src: 'superimpose_bar_comparison.png', title: 'Perbandingan Deteksi Kluster Aktif per Blok' }},
+            {{ src: 'superimpose_line_trend.png', title: 'Trend Deteksi Antar Preset' }},
+            {{ src: 'superimpose_stacked_status.png', title: 'Distribusi Status per Blok' }},
+            {{ src: 'superimpose_radar_comparison.png', title: 'Radar Perbandingan Preset' }},
+            {{ src: 'superimpose_logistics_comparison.png', title: 'Perbandingan Kebutuhan Logistik' }}
+        ];
+        
+        let currentImageIndex = 0;
+        let currentZoom = 1;
+        
+        function openLightbox(index) {{
+            currentImageIndex = index;
+            currentZoom = 1;
+            updateLightbox();
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }}
+        
+        function openBlockMapLightbox(src, title) {{
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox-img').style.transform = 'scale(1)';
+            document.getElementById('lightbox-title').textContent = title;
+            document.getElementById('lightbox-counter').textContent = '';
+            document.querySelector('.lightbox-prev').style.display = 'none';
+            document.querySelector('.lightbox-next').style.display = 'none';
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            currentZoom = 1;
+        }}
+        
+        function updateLightbox() {{
+            const img = document.getElementById('lightbox-img');
+            img.src = images[currentImageIndex].src;
+            img.style.transform = `scale(${{currentZoom}})`;
+            document.getElementById('lightbox-title').textContent = images[currentImageIndex].title;
+            document.getElementById('lightbox-counter').textContent = `${{currentImageIndex + 1}} / ${{images.length}}`;
+            document.querySelector('.lightbox-prev').style.display = 'block';
+            document.querySelector('.lightbox-next').style.display = 'block';
+        }}
+        
+        function closeLightbox() {{
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }}
+        
+        function navigateLightbox(direction) {{
+            currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+            currentZoom = 1;
+            updateLightbox();
+        }}
+        
+        function zoomLightbox(factor) {{
+            if (factor === 1) {{
+                currentZoom = 1;
+            }} else {{
+                currentZoom *= factor;
+                currentZoom = Math.max(0.5, Math.min(3, currentZoom));
+            }}
+            document.getElementById('lightbox-img').style.transform = `scale(${{currentZoom}})`;
+        }}
+        
+        function downloadImage() {{
+            const img = document.getElementById('lightbox-img');
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = img.src.split('/').pop();
+            link.click();
         }}
         
         // Keyboard shortcuts
@@ -1042,6 +1576,23 @@ def generate_html_report_all_presets(output_dir: Path, all_results: Dict, divisi
             if (e.key === '1') togglePreset('konservatif');
             if (e.key === '2') togglePreset('standar');
             if (e.key === '3') togglePreset('agresif');
+            
+            // Lightbox navigation
+            if (document.getElementById('lightbox').classList.contains('active')) {{
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+                if (e.key === '+' || e.key === '=') zoomLightbox(1.2);
+                if (e.key === '-') zoomLightbox(0.8);
+                if (e.key === '0') zoomLightbox(1);
+            }}
+        }});
+        
+        // Close lightbox when clicking outside image
+        document.getElementById('lightbox').addEventListener('click', (e) => {{
+            if (e.target.id === 'lightbox') {{
+                closeLightbox();
+            }}
         }});
     </script>
 </body>
@@ -1164,15 +1715,24 @@ def main(divisi: str = "AME_II"):
     
     create_superimpose_visualization(all_results, output_dir)
     
+    # Generate block cluster maps
+    print("\n" + "=" * 70)
+    print("🗺️ GENERATING BLOCK CLUSTER MAPS")
+    print("-" * 40)
+    
+    block_maps = generate_block_cluster_maps(all_results, output_dir, top_n=5)
+    
     # Generate HTML report
     print("\n" + "=" * 70)
     print("📝 GENERATING INTERACTIVE HTML REPORT")
     print("-" * 40)
     
-    html_path = generate_html_report_all_presets(output_dir, all_results, divisi_name)
+    html_path = generate_html_report_all_presets(output_dir, all_results, divisi_name, block_maps)
     
     print(f"\n🌐 HTML Report: {html_path}")
     print("   → Buka file ini di browser untuk laporan interaktif dengan toggle filter!")
+    print("   → Klik gambar untuk zoom/fullscreen!")
+    print("   → Gunakan keyboard: 1/2/3 untuk toggle preset, ←/→ untuk navigasi, +/- untuk zoom")
     
     # Summary
     print("\n" + "=" * 70)
