@@ -35,6 +35,68 @@ SCENARIOS = [
 ]
 
 # =============================================================================
+# CALIBRATED THRESHOLDS (Based on Census Ground Truth)
+# =============================================================================
+# Threshold terkalibrasi berdasarkan data sensus Ganoderma.
+# Kalibrasi dilakukan untuk meminimalkan MAE antara deteksi algoritma
+# dan ground truth % serangan.
+#
+# AME II (AME002): Z < -1.5 -> Lebih sensitif karena:
+#   - Tingkat serangan lebih tinggi (6.28%)
+#   - Tanaman lebih tua (2008-2009)
+#
+# AME IV (AME004): Z < -4.0 -> Lebih ketat karena:
+#   - Tingkat serangan lebih rendah (3.84%)
+#   - Data lebih homogen (std dev lebih kecil)
+#   - Tanaman lebih muda dan bervariasi (2010-2025)
+
+CALIBRATED_THRESHOLDS = {
+    "AME002": {
+        "Z_Threshold_G3": -1.5,  # Calibrated - best MAE 2.93%
+        "Z_Threshold_G2": -0.75,
+        "description": "Calibrated for AME II - MAE: 2.93%, Algo: 7.0% vs GT: 6.3%"
+    },
+    "AME004": {
+        "Z_Threshold_G3": -4.0,  # Calibrated - significant improvement
+        "Z_Threshold_G2": -2.5,
+        "description": "Calibrated for AME IV - MAE improved from 14.18% to 2.25%"
+    },
+    # Alias untuk nama alternatif
+    "AME II": {
+        "Z_Threshold_G3": -1.5,
+        "Z_Threshold_G2": -0.75,
+        "description": "Alias untuk AME002"
+    },
+    "AME IV": {
+        "Z_Threshold_G3": -4.0,
+        "Z_Threshold_G2": -2.5,
+        "description": "Alias untuk AME004"
+    }
+}
+
+def get_calibrated_threshold(divisi: str) -> dict:
+    """
+    Get calibrated threshold for a specific divisi.
+    Falls back to standard threshold if divisi not found.
+    """
+    # Normalize divisi name
+    divisi_norm = divisi.upper().replace(" ", "")
+    if divisi_norm in ["AMEII", "AME2"]:
+        divisi_norm = "AME002"
+    elif divisi_norm in ["AMEIV", "AME4"]:
+        divisi_norm = "AME004"
+    
+    if divisi_norm in CALIBRATED_THRESHOLDS:
+        return CALIBRATED_THRESHOLDS[divisi_norm]
+    else:
+        # Fallback to standard scenario
+        return {
+            "Z_Threshold_G3": -2.0,
+            "Z_Threshold_G2": -1.0,
+            "description": "Default (not calibrated)"
+        }
+
+# =============================================================================
 # DATA CONFIGURATION
 # =============================================================================
 # Kolom wajib yang harus ada dalam file CSV input (case-insensitive mapping)

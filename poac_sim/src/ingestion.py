@@ -29,6 +29,103 @@ if str(_parent_dir) not in sys.path:
 
 from config import REQUIRED_COLUMNS, COLUMN_MAPPING
 
+# =============================================================================
+# TREE CATEGORY CLASSIFICATION (Tri-State Segmentation)
+# =============================================================================
+# Based on TECHNICAL ENHANCEMENT: LOGIKA SEGMENTASI POPULASI (MATURE, YOUNG, DEAD)
+#
+# Categories:
+# - MATURE: Pokok Utama + Tambahan (Inclusion - Z-Score calculation)
+# - YOUNG:  Sisipan (Exclusion - Force G1, NDRE rendah karena kanopi kecil)
+# - DEAD:   Mati/Tumbang (Exclusion - Force G4/SOURCE, trigger Cincin Api)
+# - EMPTY:  Kosong (Exclusion - Skip, tidak ada pohon)
+# =============================================================================
+
+def classify_tree_category(ket_value, ndre_value=None) -> str:
+    """
+    Klasifikasi kategori pohon berdasarkan kolom Keterangan (Ket).
+    
+    Mengikuti aturan prioritas dari Technical Enhancement:
+    1. Safety Net: NDRE 0/Null -> EMPTY
+    2. Label Eksplisit: Mati/Tumbang -> DEAD, Kosong -> EMPTY
+    3. Usia Tanam: Sisip -> YOUNG, Utama/Tamb -> MATURE
+    4. Default: MATURE
+    
+    Args:
+        ket_value: Nilai dari kolom Ket/Keterangan
+        ndre_value: Nilai NDRE (optional, untuk safety net)
+        
+    Returns:
+        str: 'MATURE', 'YOUNG', 'DEAD', atau 'EMPTY'
+    """
+    # Safety Net: NDRE 0 atau Null -> EMPTY
+    if ndre_value is not None:
+        import pandas as pd
+        if pd.isna(ndre_value) or ndre_value == 0 or str(ndre_value).strip() == '-':
+            return 'EMPTY'
+    
+    # Normalize keterangan
+    ket = str(ket_value).lower().strip() if ket_value else ''
+    
+    # Prioritas 1: Mati/Tumbang -> DEAD
+    if 'mati' in ket or 'tumbang' in ket:
+        return 'DEAD'
+    
+    # Prioritas 2: Kosong -> EMPTY  
+    if 'kosong' in ket:
+        return 'EMPTY'
+    
+    # Prioritas 3: Sisip -> YOUNG
+    if 'sisip' in ket:
+        return 'YOUNG'
+    
+    # Prioritas 4: Utama/Tamb -> MATURE
+    if 'utama' in ket or 'tamb' in ket or 'pokok' in ket:
+        return 'MATURE'
+    
+    # Default: MATURE (pohon yang tidak memiliki label spesifik)
+    return 'MATURE'
+
+
+def add_tree_categories(df: pd.DataFrame, ket_column: str = 'ket') -> pd.DataFrame:
+    """
+    Tambahkan kolom 'Category' ke DataFrame berdasarkan kolom Keterangan.
+    
+    Args:
+        df: DataFrame dengan data pohon
+        ket_column: Nama kolom yang berisi keterangan (default: 'ket')
+        
+    Returns:
+        DataFrame dengan kolom 'Category' baru
+    """
+    df_result = df.copy()
+    
+    # Find the keterangan column (case-insensitive)
+    ket_col = None
+    for col in df_result.columns:
+        if col.lower() in ['ket', 'keterangan']:
+            ket_col = col
+            break
+    
+    if ket_col is None:
+        logger.warning("Kolom Keterangan/Ket tidak ditemukan. Semua pohon akan dikategorikan sebagai MATURE.")
+        df_result['Category'] = 'MATURE'
+        return df_result
+    
+    # Apply classification
+    def classify_row(row):
+        ket = row.get(ket_col, '')
+        ndre = row.get('NDRE125', None)
+        return classify_tree_category(ket, ndre)
+    
+    df_result['Category'] = df_result.apply(classify_row, axis=1)
+    
+    # Log distribution
+    cat_counts = df_result['Category'].value_counts()
+    logger.info(f"Tree category distribution: {cat_counts.to_dict()}")
+    
+    return df_result
+
 
 def load_ame_iv_data(filepath: str) -> pd.DataFrame:
     """
@@ -112,6 +209,9 @@ def load_ame_iv_data(filepath: str) -> pd.DataFrame:
     # Convert to int for N_BARIS and N_POKOK
     df_fixed['N_BARIS'] = df_fixed['N_BARIS'].astype(int)
     df_fixed['N_POKOK'] = df_fixed['N_POKOK'].astype(int)
+    
+    # Add tree category classification (MATURE, YOUNG, DEAD, EMPTY)
+    df_fixed = add_tree_categories(df_fixed)
     
     # Log keterangan distribution
     ket_counts = df_fixed['Keterangan'].value_counts()
@@ -223,6 +323,9 @@ def _clean_data(df: pd.DataFrame) -> pd.DataFrame:
     - Rows with null N_POKOK (koordinat pokok)
     - Rows with non-numeric NDRE125
     - Rows with Divisi = "AME II Total" or "Grand Total" (summary rows)
+    
+    Adds:
+    - Category column based on Keterangan (MATURE, YOUNG, DEAD, EMPTY)
     """
     df_clean = df.copy()
     
@@ -260,6 +363,9 @@ def _clean_data(df: pd.DataFrame) -> pd.DataFrame:
     # Ensure coordinate columns are integers
     df_clean['N_BARIS'] = df_clean['N_BARIS'].astype(int)
     df_clean['N_POKOK'] = df_clean['N_POKOK'].astype(int)
+    
+    # Add tree category classification (MATURE, YOUNG, DEAD, EMPTY)
+    df_clean = add_tree_categories(df_clean)
     
     # Reset index
     df_clean = df_clean.reset_index(drop=True)
