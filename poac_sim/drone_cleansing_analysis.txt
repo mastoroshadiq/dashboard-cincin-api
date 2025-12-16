@@ -1,0 +1,99 @@
+================================================================================
+ANALISIS DATA DRONE UNTUK CLEANSING
+================================================================================
+
+================================================================================
+1. tabelNDREnew.csv (AME II)
+================================================================================
+
+Total rows: 96,562
+Columns: ['divisi', 'blok', 'blok_b', 't_tanam', 'n_baris', 'n_pokok', 'objectid', 'ndre125', 'klassndre12025', 'ket']
+
+--- Distribusi Kolom 'ket' ---
+
+Kategori                   Jumlah     Persen
+---------------------------------------------
+Pokok Utama                93,851      97.2%
+  - Pokok Utama        93,851
+Sisip                         787       0.8%
+  - Sisip Juli'23         442
+  - Sisip Okt'23          181
+  - Sisip Mei'23           83
+  - Sisip Agust'23         79
+  - Sisip Nov'23            2
+Tambahan                      482       0.5%
+  - Tamb                  482
+Kosong                        823       0.9%
+  - Kosong.               480
+  - Kosong                343
+Mati                          617       0.6%
+  - Mati Okt'23           209
+  - Mati Juni24           114
+  - Mati Jan'24            87
+  - Mati Mei25             60
+  - Mati Okt24             59
+  - Mati Jan25             46
+  - Mati Agust25           42
+
+
+================================================================================
+2. AME_IV.csv (AME IV)
+================================================================================
+
+Total rows (setelah clean): 81,962
+Columns: ['Divisi', 'Blok', 'N_BARIS', 'N_POKOK', 'NDRE125', 'Keterangan']
+
+--- Distribusi Kolom 'Keterangan' ---
+
+Nilai                           Jumlah     Persen
+--------------------------------------------------
+Pokok Utama                     59,387      72.5%
+Sisip                            5,157       6.3%
+Des'19                           1,632       2.0%
+Utama                            1,394       1.7%
+Juli'23                            882       1.1%
+Feb'21                             591       0.7%
+Nov'23                             568       0.7%
+Mati                               477       0.6%
+Nov'19                             458       0.6%
+Agust'22                           407       0.5%
+Juni24                             393       0.5%
+Sep'21                             368       0.4%
+Okt24                              360       0.4%
+Jun'21                             323       0.4%
+Jan'24                             296       0.4%
+Mei25                              294       0.4%
+Jan25                              291       0.4%
+Mei'21                             270       0.3%
+Juni'23                            226       0.3%
+
+
+================================================================================
+RINGKASAN & REKOMENDASI
+================================================================================
+
+1. Kategori Pohon yang Teridentifikasi:
+--------------------------------------------------
+   a. POKOK UTAMA  - Pohon asli/pertama ditanam
+   b. SISIP        - Pohon pengganti/replanting
+   c. TAMBAHAN     - Pohon tambahan
+   d. KOSONG       - Lokasi tidak ada pohon
+   e. MATI         - Pohon sudah mati
+
+2. Dampak pada Analisis:
+--------------------------------------------------
+   - Ghost Tree Audit: 
+     * Perbandingan Buku vs Drone harus hanya 'Pokok Utama'
+     * 'Sisip' tidak termasuk dalam hitungan 'Pokok Utama' buku
+     * 'Kosong' dan 'Mati' harus di-exclude
+
+   - Early Detection:
+     * Analisis risiko Ganoderma tetap semua pohon hidup
+     * 'Kosong' dan 'Mati' exclude dari deteksi
+
+3. Rekomendasi Implementasi:
+--------------------------------------------------
+   a. Tambah kolom 'tree_category' dengan nilai:
+      - 'POKOK_UTAMA', 'SISIP', 'TAMBAHAN', 'KOSONG', 'MATI'
+   b. Modifikasi Ghost Tree untuk filter 'POKOK_UTAMA' only
+   c. Modifikasi Early Detection untuk exclude 'KOSONG'/'MATI'

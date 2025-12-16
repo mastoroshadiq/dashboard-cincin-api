@@ -1,0 +1,106 @@
+﻿======================================================================
+INVESTIGATION: Why AME IV needs stricter threshold?
+======================================================================
+
+
+======================================================================
+1. NDRE DISTRIBUTION COMPARISON
+======================================================================
+
+Metric                             AME II          AME IV      Difference
+----------------------------------------------------------------------
+Count (MATURE)                     94,201          68,372         +25,829
+NDRE Mean                          0.4120          0.3744         +0.0376
+NDRE Std                           0.0337          0.0441         -0.0103
+NDRE Min                           0.1747          0.1401
+NDRE Max                           0.5713          0.5238
+NDRE Median                        0.4126          0.3764
+CV (Coef. Variation) %               8.19           11.77           -3.58
+
+
+======================================================================
+2. POPULATION COMPOSITION
+======================================================================
+
+Category                 AME II          %          AME IV          %
+-----------------------------------------------------------------
+MATURE                   94,201      99.1%          68,372      83.4%
+YOUNG                       787       0.8%           4,700       5.7%
+DEAD                         42       0.0%              65       0.1%
+EMPTY                         0       0.0%           8,825      10.8%
+-----------------------------------------------------------------
+TOTAL                    95,030      100.0%          81,962      100.0%
+
+
+======================================================================
+3. GROUND TRUTH GANODERMA RATES
+======================================================================
+
+Metric                             AME II          AME IV
+-------------------------------------------------------
+Number of Blocks                       36              76
+Total PKK                          95,055          77,043
+Total Ganoderma                     5,969           2,960
+Overall % Serangan                  6.28%           3.84%
+Mean % per block                    6.32%           1.81%
+Std % per block                     3.63%           3.25%
+Max % per block                    14.26%          13.15%
+
+
+======================================================================
+4. NDRE STANDARD DEVIATION PER BLOCK
+======================================================================
+
+Metric                             AME II          AME IV
+-------------------------------------------------------
+Mean Std per Block                 0.0297          0.0358
+Min Std per Block                  0.0263          0.0225
+Max Std per Block                  0.0344          0.0692
+
+
+======================================================================
+5. PLANTATION AGE (from Ground Truth)
+======================================================================
+
+Tahun Tanam              AME II          AME IV
+---------------------------------------------
+0                             0               5
+2008                          3               0
+2009                         33               0
+2011                          0               4
+2012                          0               4
+2013                          0              14
+2015                          0               1
+2016                          0               4
+2017                          0               8
+2018                          0               9
+2019                          0               6
+2020                          0               3
+2021                          0               7
+2022                          0               3
+2023                          0               3
+2025                          0               5
+
+
+======================================================================
+6. HYPOTHESIS: Why AME IV needs stricter threshold?
+======================================================================
+
+Findings:
+--------------------------------------------------
+2. AME IV has LOWER Ganoderma rate than AME II
+   (3.84% vs 6.28%)
+   => Fewer diseased trees = need stricter threshold
+
+3. AME IV has HIGH EMPTY rate (10.8%)
+   => Data quality issue? NDRE missing/invalid?
+
+
+Conclusion:
+--------------------------------------------------
+AME IV requires stricter threshold (Z < -4.0) because:
+  a) Lower data variability (lower std) means Z-Score distribution
+     is more compressed - outliers have larger Z values
+  b) Lower actual Ganoderma rate means fewer trees should be flagged
+  c) Standard Z < -2.0 threshold over-detects for AME IV
+

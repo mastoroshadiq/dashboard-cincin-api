@@ -1,0 +1,68 @@
+======================================================================
+PERBANDINGAN: Data Drone vs Ground Truth Excel
+======================================================================
+
+==================================================
+AME002
+==================================================
+
+Kategori                Ground Truth           Drone         Selisih
+-----------------------------------------------------------------
+TANAM (=MATURE)               61,005          94,201         +33,196
+SISIP (=YOUNG)                34,050             787         -33,263
+MATI (=DEAD)                     N/A              42                
+KOSONG (=EMPTY)                  N/A               0                
+-----------------------------------------------------------------
+TOTAL_PKK                     95,055          95,030             -25
+
+==================================================
+AME004
+==================================================
+
+Kategori                Ground Truth           Drone         Selisih
+-----------------------------------------------------------------
+TANAM (=MATURE)               51,967          68,372         +16,405
+SISIP (=YOUNG)                21,709           4,700         -17,009
+MATI (=DEAD)                     N/A              65                
+KOSONG (=EMPTY)                  N/A           8,825                
+-----------------------------------------------------------------
+TOTAL_PKK                     77,043          81,962          +4,919
+
+
+======================================================================
+ANALISIS KESIMPULAN
+======================================================================
+
+AME002 (AME II):
+--------------------------------------------------
+  - GT TANAM: 61,005 vs Drone MATURE: 94,201
+    => Selisih +33,196 menunjukkan Drone mendeteksi lebih banyak
+    => Kemungkinan: Tamb di drone masuk MATURE, atau ada pohon extra
+
+  - GT SISIP: 34,050 vs Drone YOUNG: 787
+    => Selisih -33,263 menunjukkan banyak sisip TIDAK ter-tag di drone
+    => Kemungkinan: Sisip sudah dewasa sehingga ter-classify MATURE
+
+
+AME004 (AME IV):
+--------------------------------------------------
+  - GT TANAM: 51,967 vs Drone MATURE: 68,372
+    => Selisih +16,405 menunjukkan Drone mendeteksi lebih banyak
+
+  - GT SISIP: 21,709 vs Drone YOUNG: 4,700
+    => Selisih -17,009 menunjukkan banyak sisip tidak ter-tag YOUNG
+
+
+======================================================================
+REKOMENDASI
+======================================================================
+
+Kategorisasi drone 'MATURE' vs 'YOUNG' TIDAK reliable untuk
+perbandingan dengan data buku (TANAM vs SISIP) karena:
+
+1. Label Keterangan drone tidak selalu akurat/lengkap
+2. Sisip yang sudah tua (dewasa) akan ter-detect sebagai 'Pokok Utama'
+3. Data buku (SISIP) adalah akumulatif, sementara drone hanya snapshot
+
+Untuk Ghost Tree Audit, gunakan TOTAL_PKK dari ground truth Excel
+untuk perbandingan yang lebih akurat.

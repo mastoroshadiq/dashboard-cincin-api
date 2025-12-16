@@ -1,0 +1,143 @@
+﻿python : D:\PythonProjects\simulasi_poac\poac_sim\comp
+are_sisip.py:50: FutureWarning: Downcasting object 
+dtype arrays on .fillna, .ffill, .bfill is deprecated 
+and will change in a future version. Call 
+result.infer_objects(copy=False) instead. To opt-in 
+to the future behavior, set 
+`pd.set_option('future.no_silent_downcasting', True)`
+At line:1 char:1
++ python compare_sisip.py 2>&1 | Out-File -FilePath 
+sisip_comparison_ou ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (D:\Pytho 
+   nProjec...asting', True)`:String) [], RemoteExcep  
+  tion
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  df_gt_ame2['GT_Sisip'] = 
+df_gt_ame2['SISIP'].fillna(0) + 
+df_gt_ame2['SISIP_KENTOSAN'].fillna(0)
+D:\PythonProjects\simulasi_poac\poac_sim\compare_sisip
+.py:56: FutureWarning: Downcasting object dtype 
+arrays on .fillna, .ffill, .bfill is deprecated and 
+will change in a future version. Call 
+result.infer_objects(copy=False) instead. To opt-in 
+to the future behavior, set 
+`pd.set_option('future.no_silent_downcasting', True)`
+  ).fillna(0)
+D:\PythonProjects\simulasi_poac\poac_sim\compare_sisip
+.py:91: FutureWarning: Downcasting object dtype 
+arrays on .fillna, .ffill, .bfill is deprecated and 
+will change in a future version. Call 
+result.infer_objects(copy=False) instead. To opt-in 
+to the future behavior, set 
+`pd.set_option('future.no_silent_downcasting', True)`
+  df_gt_ame4['GT_Sisip'] = 
+df_gt_ame4['SISIP'].fillna(0) + 
+df_gt_ame4['SISIP_KENTOSAN'].fillna(0)
+D:\PythonProjects\simulasi_poac\poac_sim\compare_sisip
+.py:97: FutureWarning: Downcasting object dtype 
+arrays on .fillna, .ffill, .bfill is deprecated and 
+will change in a future version. Call 
+result.infer_objects(copy=False) instead. To opt-in 
+to the future behavior, set 
+`pd.set_option('future.no_silent_downcasting', True)`
+  ).fillna(0)
+================================================================================
+PERBANDINGAN SISIP: Drone Data vs Ground Truth
+================================================================================
+
+Loading drone data...
+Loading ground truth...
+
+================================================================================
+AME II (AME002)
+================================================================================
+
+Total SISIP dari Drone: 787
+Total SISIP dari Ground Truth: 34,050
+Difference: -33,263
+
+Blok dengan SISIP di Drone: 2
+Blok dengan SISIP di GT: 36
+
+--------------------------------------------------------------------------------
+Detail per Blok (Top 20 by GT Sisip):
+--------------------------------------------------------------------------------
+Blok             Drone Sisip     GT Sisip         Diff     GT TANAM
+--------------------------------------------------------------------------------
+D001A                      0        2,843       -2,843          641
+D004A                      0        2,688       -2,688          153
+D002A                      0        2,588       -2,588          562
+D003A                      0        2,576       -2,576          555
+E011A                    181        2,291       -2,110          361
+E001A                      0        2,112       -2,112          902
+E012A                      0        1,895       -1,895          694
+E002A                      0        1,779       -1,779        1,080
+E009A                    606        1,773       -1,167          922
+D010A                      0          953         -953        1,622
+F011A                      0          912         -912        1,512
+F002A                      0          873         -873        1,268
+E003A                      0          859         -859        1,925
+D009A                      0          831         -831        1,783
+F010A                      0          763         -763        2,021
+F009A                      0          751         -751        1,852
+F003A                      0          693         -693          977
+D007A                      0          664         -664        1,934
+E010A                      0          589         -589        1,907
+D012A                      0          583         -583        2,028
+
+
+================================================================================
+AME IV (AME004)
+================================================================================
+
+Total SISIP dari Drone: 4,700
+Total SISIP dari Ground Truth: 21,709
+Difference: -17,009
+
+Blok dengan SISIP di Drone: 20
+Blok dengan SISIP di GT: 56
+
+--------------------------------------------------------------------------------
+Detail per Blok (Top 20 by GT Sisip):
+--------------------------------------------------------------------------------
+Blok             Drone Sisip     GT Sisip         Diff     GT TANAM
+--------------------------------------------------------------------------------
+C012A                    499        3,580       -3,081           20
+B018A                      0        3,507       -3,507          770
+B019A                      0        2,172       -2,172        1,325
+C018A                     97        2,128       -2,031        1,252
+C018A                     13        2,128       -2,115        1,252
+B020A                      0        1,414       -1,414        2,107
+C019A                    139        1,073         -934        2,294
+B012A                  1,075        1,062          +13        2,512
+B013A                    617          735         -118        2,540
+B021A                    164          697         -533        2,900
+A019A                    474          568          -94          669
+C014A                      0          485         -485        3,251
+A012B                    603          428         +175          377
+A018A                     18          424         -406           61
+B014C                    478          343         +135        1,592
+A020A                     28          338         -310          864
+C017A                      0          321         -321        3,183
+C015A                     58          235         -177        3,037
+B022A                     84          235         -151          976
+B017B                    128          221          -93          217
+
+
+================================================================================
+RINGKASAN
+================================================================================
+
+Divisi           Drone Sisip        GT Sisip      Difference
+------------------------------------------------------------
+AME II                   787          34,050         -33,263
+AME IV                 4,700          21,709         -17,009
+
+
+Blok dengan SISIP di Drone tapi tidak ada di GT:
+  AME II: 0 blok
+  AME IV: 0 blok
+
+CSV saved to data/output/sisip_comparison_ame2.csv and sisip_comparison_ame4.csv

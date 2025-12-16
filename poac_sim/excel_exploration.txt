@@ -1,0 +1,300 @@
+======================================================================
+EXPLORING: Arael Inti & Serangan Ganoderma.xlsx
+======================================================================
+
+Sheets: ['Arlt', 'Arlt Counting ulang', 'Historis Pkk', 'Arlt Counting ulang PLS', 'Arlt (Rev HGU)', '11,073', 'Check', 'Sheet1', 'Pemutihan Blok', 'Penambahan Blok', 'Sheet2']
+
+==================================================
+Sheet: Arlt
+==================================================
+Shape: (1265, 79)
+
+Columns:
+  0: Unnamed: 0
+  1: AREALSTT INTI & PLASMA
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+  17: Unnamed: 17
+  18: Unnamed: 18
+  19: Unnamed: 19
+  20: Unnamed: 20
+  21: Unnamed: 21
+  22: Unnamed: 22
+  23: Unnamed: 23
+  24: Unnamed: 24
+
+==================================================
+Sheet: Arlt Counting ulang
+==================================================
+Shape: (1266, 55)
+
+Columns:
+  0: Unnamed: 0
+  1: AREALSTT INTI & PLASMA
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+  17: Unnamed: 17
+  18: Unnamed: 18
+  19: Unnamed: 19
+  20: Unnamed: 20
+  21: Unnamed: 21
+  22: Unnamed: 22
+  23: Unnamed: 23
+  24: Unnamed: 24
+
+==================================================
+Sheet: Historis Pkk
+==================================================
+Shape: (992, 89)
+
+Columns:
+  0: Unnamed: 0
+  1: REAL TANAM INTI
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+  17: Unnamed: 17
+  18: Unnamed: 18
+  19: Unnamed: 19
+  20: Unnamed: 20
+  21: Unnamed: 21
+  22: Unnamed: 22
+  23: Unnamed: 23
+  24: Unnamed: 24
+
+==================================================
+Sheet: Arlt Counting ulang PLS
+==================================================
+Shape: (1265, 102)
+
+Columns:
+  0: Unnamed: 0
+  1: AREALSTT INTI & PLASMA
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+  17: Unnamed: 17
+  18: Unnamed: 18
+  19: Unnamed: 19
+  20: Unnamed: 20
+  21: Unnamed: 21
+  22: Unnamed: 22
+  23: Unnamed: 23
+  24: Unnamed: 24
+
+  >> RELEVANT COLUMNS:
+     - SISIP
+     - SISIP 18-11
+
+==================================================
+Sheet: Arlt (Rev HGU)
+==================================================
+Shape: (1265, 76)
+
+Columns:
+  0: Unnamed: 0
+  1: AREALSTT INTI & PLASMA
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+  17: Unnamed: 17
+  18: Unnamed: 18
+  19: Unnamed: 19
+  20: Unnamed: 20
+  21: Unnamed: 21
+  22: Unnamed: 22
+  23: Unnamed: 23
+  24: Unnamed: 24
+
+==================================================
+Sheet: 11,073
+==================================================
+Shape: (810, 65)
+
+Columns:
+  0: Unnamed: 0
+  1: REKONSILIASI AREAL STATEMENT TAHUN 2022
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+  17: Unnamed: 17
+  18: Unnamed: 18
+  19: Unnamed: 19
+  20: Unnamed: 20
+  21: Unnamed: 21
+  22: Unnamed: 22
+  23: Unnamed: 23
+  24: Unnamed: 24
+
+==================================================
+Sheet: Check
+==================================================
+Shape: (652, 39)
+
+Columns:
+  0: Unnamed: 0
+  1: Unnamed: 1
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+  17: Unnamed: 17
+  18: Unnamed: 18
+  19: Unnamed: 19
+  20: Unnamed: 20
+  21: Unnamed: 21
+  22: Unnamed: 22
+  23: Unnamed: 23
+  24: Unnamed: 24
+
+==================================================
+Sheet: Sheet1
+==================================================
+Shape: (811, 4)
+
+Columns:
+  0: Unnamed: 0
+  1: Unnamed: 1
+  2: Unnamed: 2
+  3: Unnamed: 3
+
+==================================================
+Sheet: Pemutihan Blok
+==================================================
+Shape: (249, 14)
+
+Columns:
+  0: Unnamed: 0
+  1: Unnamed: 1
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+
+==================================================
+Sheet: Penambahan Blok
+==================================================
+Shape: (30, 17)
+
+Columns:
+  0: Unnamed: 0
+  1: RENCANA PENAMBAHAN DAN PENGURANGAN LUASAN TANAM
+  2: Unnamed: 2
+  3: Unnamed: 3
+  4: Unnamed: 4
+  5: Unnamed: 5
+  6: Unnamed: 6
+  7: Unnamed: 7
+  8: Unnamed: 8
+  9: Unnamed: 9
+  10: Unnamed: 10
+  11: Unnamed: 11
+  12: Unnamed: 12
+  13: Unnamed: 13
+  14: Unnamed: 14
+  15: Unnamed: 15
+  16: Unnamed: 16
+
+==================================================
+Sheet: Sheet2
+==================================================
+Shape: (575, 4)
+
+Columns:
+  0: Unnamed: 0
+  1: Unnamed: 1
+  2: Unnamed: 2
+  3: Unnamed: 3

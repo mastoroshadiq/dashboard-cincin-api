@@ -1,0 +1,56 @@
+======================================================================
+ANALISIS STRUKTUR DATA DRONE
+======================================================================
+
+1. tabelNDREnew.csv (AME II)
+--------------------------------------------------
+Shape: (96562, 10)
+Columns: ['divisi', 'blok', 'blok_b', 't_tanam', 'n_baris', 'n_pokok', 'objectid', 'ndre125', 'klassndre12025', 'ket']
+
+Column 'ket' unique values:
+  Pokok Utama              :   93,851 ( 97.2%)
+  Tamb                     :      482 (  0.5%)
+  Kosong.                  :      480 (  0.5%)
+  Sisip Juli'23            :      442 (  0.5%)
+  Kosong                   :      343 (  0.4%)
+  Mati Okt'23              :      209 (  0.2%)
+  Sisip Okt'23             :      181 (  0.2%)
+  Mati Juni24              :      114 (  0.1%)
+  Mati Jan'24              :       87 (  0.1%)
+  Sisip Mei'23             :       83 (  0.1%)
+  Sisip Agust'23           :       79 (  0.1%)
+  Mati Mei25               :       60 (  0.1%)
+  Mati Okt24               :       59 (  0.1%)
+  Mati Jan25               :       46 (  0.0%)
+  Mati Agust25             :       42 (  0.0%)
+  Sisip Nov'23             :        2 (  0.0%)
+
+
+2. AME_IV.csv (AME IV)
+--------------------------------------------------
+Shape: (82275, 15)
+Columns: ['DIVISI', 'Blok', 'BLOK_B', 'T_TANAM', 'N_BARIS', 'N_POKOK', 'OBJECTID', 'NDRE125', 'KlassNDRE12025', 'Ket', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+
+Column 'Ket' unique values:
+  Stres                    :   69,664 ( 84.7%)
+  -0                       :    8,980 ( 10.9%)
+  Stres Sangat Berat       :    3,630 (  4.4%)
+
+
+======================================================================
+SUMMARY: Kategori Pohon yang Perlu Di-cleanse
+======================================================================
+
+Kategori yang teridentifikasi:
+  1. Pokok Utama - Pohon asli/utama
+  2. Sisip - Pohon sisipan (replanting)
+  3. Tamb - Pohon tambahan
+  4. Kosong - Lokasi kosong (tidak ada pohon)
+  5. Mati - Pohon sudah mati
+
+
+Rekomendasi untuk Ghost Tree Audit:
+--------------------------------------------------
+  - Hanya hitung 'Pokok Utama' untuk perbandingan dengan data buku
+  - 'Sisip' sebagai kategori terpisah
+  - 'Kosong' dan 'Mati' harus di-exclude dari hitungan pohon hidup
