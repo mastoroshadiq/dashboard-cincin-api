@@ -950,30 +950,6 @@ def generate_html_dashboard(summaries: dict, df_metrics: pd.DataFrame, charts: d
         </div>
 """
     
-    # Section 4: Threshold Calibration
-    thresh_ame2 = get_calibrated_threshold('AME002')
-    thresh_ame4 = get_calibrated_threshold('AME004')
-    
-    html += f"""
-        <div class="section">
-            <h2>🎯 Threshold Calibration Results</h2>
-            <div class="grid-2">
-                <div class="stat-box">
-                    <h4>AME II (AME002)</h4>
-                    <p style="font-size: 2em; color: #2ecc71;">Z &lt; {thresh_ame2['Z_Threshold_G3']}</p>
-                    <p style="color: #a0a0a0;">Calibrated threshold for SICK detection</p>
-                    <p style="margin-top: 10px;">MAE: <strong style="color: #2ecc71;">{summaries['AME002']['mae']:.2f}%</strong></p>
-                </div>
-                <div class="stat-box">
-                    <h4>AME IV (AME004)</h4>
-                    <p style="font-size: 2em; color: #2ecc71;">Z &lt; {thresh_ame4['Z_Threshold_G3']}</p>
-                    <p style="color: #a0a0a0;">Calibrated threshold for SICK detection</p>
-                    <p style="margin-top: 10px;">MAE: <strong style="color: #2ecc71;">{summaries['AME004']['mae']:.2f}%</strong></p>
-                </div>
-            </div>
-        </div>
-"""
-    
     # Section 5: Ganoderma Detection
     html += f"""
         <div class="section">
