@@ -182,7 +182,8 @@ CINCIN_API_CONFIG = {
     "use_consensus": True,
     
     # Minimum preset yang harus setuju untuk pohon dianggap target
-    "min_votes": 2,  # 2 dari 3 preset harus setuju
+    # v3.5: Union voting (1) terbukti efektif: 5,773 deteksi (-3% vs GT)
+    "min_votes": 1,  # CHANGED: from 2 to 1 (Union voting)
     
     # --------------------------------------------------------------------------
     # OUTPUT & VISUALIZATION OPTIONS
@@ -208,31 +209,31 @@ CINCIN_API_CONFIG = {
 
 CINCIN_API_PRESETS = {
     "konservatif": {
-        # Untuk kebun dengan infeksi rendah - deteksi ketat
-        # v3.4: WIDENED - Lepaskan hard cap, biarkan Kneedle mencari knee point
-        "threshold_min": 0.05,  # 5% (was 1%)
-        "threshold_max": 0.20,  # 20% (was 10%)
-        "threshold_step": 0.01,  # 1% step untuk presisi
-        "min_sick_neighbors": 4,  # Lebih ketat
-        "description": "v3.4: Widened range untuk Kneedle. Deteksi ketat."
+        # v3.5: RAISE THE FLOOR - Paksa Kneedle mulai dari 8%
+        # Target: Menangkap core infection yang lebih luas
+        "threshold_min": 0.08,  # 8% (raised from 5%)
+        "threshold_max": 0.20,  # 20%
+        "threshold_step": 0.01,
+        "min_sick_neighbors": 4,
+        "description": "v3.5: Raised floor 8%. Deteksi ketat."
     },
     "standar": {
-        # Setting default - seimbang
-        # v3.4: WIDENED - Buka sampai 40%
-        "threshold_min": 0.10,  # 10%
-        "threshold_max": 0.40,  # 40% (was 20%)
-        "threshold_step": 0.01,  # 1% step untuk presisi
+        # v3.5: RAISE THE FLOOR - Ini adalah "Sweet Spot" kita
+        # Target: 12-15% threshold untuk ~5,500-7,000 deteksi
+        "threshold_min": 0.12,  # 12% (raised from 10%)
+        "threshold_max": 0.30,  # 30%
+        "threshold_step": 0.01,
         "min_sick_neighbors": 3,
-        "description": "v3.4: Widened range untuk Kneedle. Setting standar."
+        "description": "v3.5: Raised floor 12%. Sweet spot target."
     },
     "agresif": {
-        # Untuk kebun dengan infeksi tinggi - deteksi luas
-        # v3.4: WIDENED - Buka sampai 60%, biarkan Kneedle mencari batas alami
-        "threshold_min": 0.20,  # 20% (was 15%)
-        "threshold_max": 0.60,  # 60% (was 30%)
-        "threshold_step": 0.01,  # 1% step untuk presisi
-        "min_sick_neighbors": 2,  # Lebih longgar
-        "description": "v3.4: Widened range untuk Kneedle. Deteksi luas."
+        # v3.5: RAISE THE FLOOR - Upper bound limit
+        # Target: 18-20% threshold
+        "threshold_min": 0.15,  # 15% (raised from 20%)
+        "threshold_max": 0.40,  # 40%
+        "threshold_step": 0.01,
+        "min_sick_neighbors": 2,
+        "description": "v3.5: Raised floor 15%. Upper bound."
     }
 }
 
