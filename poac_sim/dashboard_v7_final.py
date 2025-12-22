@@ -292,6 +292,30 @@ def analyze_divisi(df, divisi_name, prod_df, output_dir):
     
     return results, block_maps
 
+def convert_gano_to_prod_pattern(gano_blok):
+    """
+    Convert Ganoderma block name to Productivity block pattern.
+    Examples: B16 → B016, A12 → A012, C18A → C018
+    """
+    import re
+    match = re.match(r'([A-Z]+)(\d+)([A-Z]*)', str(gano_blok))
+    if match:
+        prefix, num, suffix = match.groups()
+        return f"{prefix}{num.zfill(3)}"
+    return str(gano_blok)
+
+def convert_prod_to_gano_pattern(prod_blok):
+    """
+    Convert Productivity block name to Ganoderma block pattern.
+    Examples: A012A → A12, B016B → B16, C018A → C18
+    """
+    import re
+    match = re.match(r'([A-Z]+)(\d+)([A-Z]*)', str(prod_blok))
+    if match:
+        prefix, num, suffix = match.groups()
+        return f"{prefix}{int(num)}"
+    return str(prod_blok)
+
 def generate_html_with_realtime(output_dir, all_results, all_maps, prod_df):
     """Generate HTML with real-time configuration panel and dual POV."""
     
@@ -350,13 +374,42 @@ def generate_html_with_realtime(output_dir, all_results, all_maps, prod_df):
             ])
             maps_html += f'<div class="maps-section"><h4>{p.upper()}</h4><div class="maps-grid">{items}</div></div>'
         
+def convert_gano_to_prod_pattern(gano_blok):
+    """
+    Convert Ganoderma block name to Productivity block pattern.
+    Examples: B16 → B016, A12 → A012, C18A → C018
+    """
+    import re
+    match = re.match(r'([A-Z]+)(\d+)([A-Z]*)', str(gano_blok))
+    if match:
+        prefix, num, suffix = match.groups()
+        # Zero-pad number to 3 digits
+        return f"{prefix}{num.zfill(3)}"
+    return str(gano_blok)
+
+def convert_prod_to_gano_pattern(prod_blok):
+    """
+    Convert Productivity block name to Ganoderma block pattern.
+    Examples: A012A → A12, B016B → B16, C018A → C18
+    """
+    import re
+    match = re.match(r'([A-Z]+)(\d+)([A-Z]*)', str(prod_blok))
+    if match:
+        prefix, num, suffix = match.groups()
+        # Remove leading zeros
+        return f"{prefix}{int(num)}"
+    return str(prod_blok)
+
         # POV 1: Ganoderma → Yield
         block_stats = results['standar']['block_stats']
         top_gano = block_stats.nlargest(10, 'Attack_Pct')
         
         gano_rows = ""
         for i, (_, r) in enumerate(top_gano.iterrows(), 1):
-            yield_val = prod_df[prod_df['Blok_Prod'].str.contains(r['Blok'][:3], na=False, regex=False)]['Yield_TonHa'].mean()
+            # Convert Ganoderma block name to productivity pattern (B16 → B016)
+            prod_pattern = convert_gano_to_prod_pattern(r['Blok'])
+            yield_matches = prod_df[prod_df['Blok_Prod'].str.contains(prod_pattern, na=False, regex=False)]
+            yield_val = yield_matches['Yield_TonHa'].mean() if not yield_matches.empty else None
             yield_str = f"{yield_val:.2f}" if pd.notna(yield_val) else "N/A"
             gano_rows += f'<tr><td>{i}</td><td><b>{r["Blok"]}</b></td><td>{r["Total"]:,}</td><td style="color:#e74c3c">{r["MERAH"]}</td><td style="color:#e67e22">{r["ORANYE"]}</td><td><b>{r["Attack_Pct"]:.1f}%</b></td><td>{yield_str}</td></tr>'
         
@@ -365,7 +418,9 @@ def generate_html_with_realtime(output_dir, all_results, all_maps, prod_df):
         if not prod_df.empty:
             low_yield = prod_df.nsmallest(10, 'Yield_TonHa')
             for i, (_, r) in enumerate(low_yield.iterrows(), 1):
-                blok_match = block_stats[block_stats['Blok'].str.contains(str(r['Blok_Prod'])[:3], na=False, regex=False)]
+                # Convert productivity block name to  Ganoderma pattern (A012A → A12)
+                gano_pattern = convert_prod_to_gano_pattern(r['Blok_Prod'])
+                blok_match = block_stats[block_stats['Blok'].str.contains(gano_pattern, na=False, regex=False)]
                 attack = blok_match['Attack_Pct'].mean() if not blok_match.empty else 0
                 yield_rows += f'<tr><td>{i}</td><td><b>{r["Blok_Prod"]}</b></td><td>{r["Yield_TonHa"]:.3f}</td><td>{r["Luas_Ha"]:.1f}</td><td>{attack:.1f}%</td></tr>'
         
