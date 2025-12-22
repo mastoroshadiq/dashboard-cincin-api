@@ -101,24 +101,27 @@ def spatial_validation(df: pd.DataFrame, z_threshold_core: float = -1.5,
     
     df['Tetangga_Stres'] = stressed_neighbors_count
     
-    # Classify based on spatial validation
+    # Classify based on spatial validation with new labels
+    # MERAH (KLUSTER) = Core suspect + >= min_stressed_neighbors
+    # ORANYE (INDIKASI) = Core suspect + >= 1 neighbor
+    # HIJAU (SEHAT) = Normal
     def classify_zscore(row):
         if not row['is_core_suspect']:
             return 'HIJAU (SEHAT)'
         
-        if row['Tetangga_Stres'] >= 2:
-            return 'MERAH (KLUSTER AKTIF)'
+        if row['Tetangga_Stres'] >= min_stressed_neighbors:
+            return 'MERAH (KLUSTER)'
         elif row['Tetangga_Stres'] >= 1:
-            return 'KUNING (INDIKASI AWAL)'
+            return 'ORANYE (INDIKASI)'
         else:
-            return 'ABAIKAN (NOISE/SOLITER)'
+            return 'HIJAU (SEHAT)'  # Noise treated as healthy
     
     df['Status_ZScore'] = df.apply(classify_zscore, axis=1)
     
     logger.info(f"Spatial validation complete")
-    logger.info(f"  MERAH: {len(df[df['Status_ZScore'] == 'MERAH (KLUSTER AKTIF)'])}")
-    logger.info(f"  KUNING: {len(df[df['Status_ZScore'] == 'KUNING (INDIKASI AWAL)'])}")
-    logger.info(f"  NOISE: {len(df[df['Status_ZScore'] == 'ABAIKAN (NOISE/SOLITER)'])}")
+    logger.info(f"  MERAH: {len(df[df['Status_ZScore'] == 'MERAH (KLUSTER)'])}")
+    logger.info(f"  ORANYE: {len(df[df['Status_ZScore'] == 'ORANYE (INDIKASI)'])}")
+    logger.info(f"  HIJAU: {len(df[df['Status_ZScore'] == 'HIJAU (SEHAT)'])}")
     
     return df
 
@@ -153,9 +156,8 @@ def run_zscore_detection(df: pd.DataFrame,
         'method': 'Z-Score Spatial Filter v2.0',
         'threshold': z_threshold,
         'total_trees': len(df_classified),
-        'merah': len(df_classified[df_classified['Status_ZScore'] == 'MERAH (KLUSTER AKTIF)']),
-        'kuning': len(df_classified[df_classified['Status_ZScore'] == 'KUNING (INDIKASI AWAL)']),
-        'noise': len(df_classified[df_classified['Status_ZScore'] == 'ABAIKAN (NOISE/SOLITER)']),
+        'merah': len(df_classified[df_classified['Status_ZScore'] == 'MERAH (KLUSTER)']),
+        'oranye': len(df_classified[df_classified['Status_ZScore'] == 'ORANYE (INDIKASI)']),
         'hijau': len(df_classified[df_classified['Status_ZScore'] == 'HIJAU (SEHAT)']),
         'timestamp': datetime.now().isoformat()
     }
@@ -176,10 +178,9 @@ def run_zscore_comparison(df: pd.DataFrame) -> pd.DataFrame:
             'Threshold': thresh,
             'Label': 'Agresif' if thresh == -1.0 else ('Seimbang' if thresh == -1.5 else 'Konservatif'),
             'MERAH': meta['merah'],
-            'KUNING': meta['kuning'],
-            'NOISE': meta['noise'],
+            'ORANYE': meta['oranye'],
             'HIJAU': meta['hijau'],
-            'Total_Deteksi': meta['merah'] + meta['kuning']
+            'Total_Deteksi': meta['merah'] + meta['oranye']
         })
     
     return pd.DataFrame(results)

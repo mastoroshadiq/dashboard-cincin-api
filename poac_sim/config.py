@@ -242,3 +242,45 @@ CINCIN_API_PRESETS = {
 # =============================================================================
 DEFAULT_INPUT_PATH = "data/input/tabelNDREnew.csv"
 DEFAULT_OUTPUT_PATH = "data/output/"
+
+# =============================================================================
+# Z-SCORE SPATIAL FILTER v2.0 CONFIGURATION
+# =============================================================================
+# Metode baru untuk deteksi Ganoderma berdasarkan anomali statistik
+# Referensi: context/metode_baru.md
+
+# Detection Method Selection
+# Options: "ranking" (old Elbow method), "zscore" (new anomaly-based)
+DETECTION_METHOD = "zscore"
+
+# Z-Score Presets
+ZSCORE_PRESETS = {
+    "konservatif": {
+        # Hanya deteksi anomali berat (G3/G4)
+        "z_threshold_core": -2.0,       # SD untuk suspect inti
+        "z_threshold_neighbor": -0.5,   # SD untuk tetangga stres
+        "min_stressed_neighbors": 2,    # Min tetangga untuk valid
+        "description": "Konservatif: Deteksi anomali berat saja"
+    },
+    "standar": {
+        # Seimbang - Rekomendasi default
+        "z_threshold_core": -1.5,
+        "z_threshold_neighbor": -0.5,
+        "min_stressed_neighbors": 1,
+        "description": "Standar: Seimbang (Rekomendasi)"
+    },
+    "agresif": {
+        # Deteksi dini maksimal termasuk G1/G2
+        "z_threshold_core": -1.0,
+        "z_threshold_neighbor": -0.3,
+        "min_stressed_neighbors": 1,
+        "description": "Agresif: Deteksi dini maksimal"
+    }
+}
+
+# Status Labels for Z-Score (sesuai permintaan user)
+ZSCORE_STATUS_LABELS = {
+    "cluster": "MERAH (KLUSTER)",     # >= min_stressed_neighbors
+    "indication": "ORANYE (INDIKASI)", # >= 1 neighbor but < min threshold
+    "healthy": "HIJAU (SEHAT)"         # Normal, no anomaly
+}
