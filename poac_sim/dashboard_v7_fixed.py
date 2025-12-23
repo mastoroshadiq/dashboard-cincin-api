@@ -414,7 +414,12 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
                 impact = "❓ N/A"
                 impact_color = "#999"
             
-            gano_rows += f'<tr><td>{i}</td><td><b>{blok_prod_name}</b></td><td>{r["Total"]:,} pohon</td><td style="color:#e74c3c">{r["MERAH"]}</td><td style="color:#e67e22">{r["ORANYE"]}</td><td><b>{r["Attack_Pct"]:.1f}%</b></td><td>{luas_str}</td><td>{real_str}</td><td>{pot_str}</td><td style="color:{gap_color}"><b>{gap_prod_str}</b></td><td>{umur_str}</td><td style="color:{impact_color}"><b>{impact}</b></td></tr>'
+            # Format yield values
+            yield_real_str = f"{yield_val:.2f}" if pd.notna(yield_val) else "N/A"
+            yield_pot_str = f"{potensi_yield:.2f}" if pd.notna(potensi_yield) else "N/A"
+            gap_yield_str = f"{gap_yield:.2f}" if pd.notna(gap_yield) else "N/A"
+            
+            gano_rows += f'<tr><td>{i}</td><td><b>{blok_prod_name}</b></td><td>{r["Total"]:,} pohon</td><td style="color:#e74c3c">{r["MERAH"]}</td><td style="color:#e67e22">{r["ORANYE"]}</td><td><b>{r["Attack_Pct"]:.1f}%</b></td><td>{luas_str}</td><td>{real_str}</td><td>{pot_str}</td><td style="color:{gap_color}"><b>{gap_prod_str}</b></td><td>{yield_real_str}</td><td>{yield_pot_str}</td><td>{gap_yield_str}</td><td>{umur_str}</td><td style="color:{impact_color}"><b>{impact}</b></td></tr>'
         
         # POV 2: Low yield blocks WITH RELEVANT Ganoderma attack (PRODUCTIVE PLANTS ONLY)
         yield_rows = ""
@@ -477,8 +482,8 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
             
             <section class="pov-section">
                 <h3>🔥 POV 1: Ganoderma → Produktivitas</h3>
-                <p>Top 10 blok dengan serangan tertinggi dan analisis produktivitas<br><span style="color:#999; font-size:0.9em">📍 <b>Realisasi/Potensi</b> = Produksi total dalam Ton | <b>Gap</b> = Selisih Potensi-Realisasi (🔴>30, 🟠10-30, 🟢<10 Ton)</span></p>
-                <table><thead><tr><th>#</th><th>Blok</th><th>Total Pohon</th><th>MERAH</th><th>ORANYE</th><th>% Attack</th><th>Luas (Ha)</th><th>Realisasi (Ton)</th><th>Potensi (Ton)</th><th>Gap (Ton)</th><th>Umur</th><th>Dampak</th></tr></thead>
+                <p>Top 10 blok dengan serangan tertinggi dan analisis produktivitas lengkap<br><span style="color:#999; font-size:0.9em">📍 <b>Produksi</b> = Total Ton | <b>Yield</b> = Ton/Ha | <b>Gap</b> dengan color coding</span></p>
+                <table><thead><tr><th>#</th><th>Blok</th><th>Total Pohon</th><th>MERAH</th><th>ORANYE</th><th>% Attack</th><th>Luas (Ha)</th><th>Real Prod (Ton)</th><th>Pot Prod (Ton)</th><th>Gap Prod</th><th>Yield Real</th><th>Yield Pot</th><th>Gap Yield</th><th>Umur</th><th>Dampak</th></tr></thead>
                 <tbody>{gano_rows}</tbody></table>
             </section>
             
