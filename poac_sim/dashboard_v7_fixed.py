@@ -392,8 +392,9 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
                     blok_match = block_stats[block_stats['Blok'].str.contains(gano_pattern, na=False, regex=False)]
                     attack = blok_match['Attack_Pct'].mean() if not blok_match.empty else 0
                     
-                    # Only include if attack > 10% (relevant to Ganoderma)
-                    if attack >= 10:
+                    # Only include if attack > 5% (relevant to Ganoderma)
+                    # Threshold lowered from 10% to capture more correlations
+                    if attack >= 5:
                         relevant_blocks.append({
                             'blok': r['Blok_Prod'],
                             'umur': int(r['Umur_Tahun']) if pd.notna(r['Umur_Tahun']) else 0,
@@ -443,7 +444,7 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
             
             <section class="pov-section">
                 <h3>📉 POV 2: Produktivitas → Ganoderma</h3>
-                <p>Blok yield terendah DENGAN serangan Ganoderma signifikan (attack >10%)<br><span style="color:#999; font-size:0.9em">📌 Filter: Tanaman >5th + Attack >10% | <b>Relevansi</b> = Kekuatan korelasi serangan dengan yield rendah</span></p>
+                <p>Blok yield terendah DENGAN serangan Ganoderma (attack >5%)<br><span style="color:#999; font-size:0.9em">📌 Filter: Tanaman >5th + Attack >5% | <b>Relevansi</b> = Kekuatan korelasi serangan dengan yield rendah</span></p>
                 <table><thead><tr><th>#</th><th>Blok</th><th>Umur</th><th>Yield</th><th>Luas</th><th>% Attack</th><th>Relevansi</th></tr></thead>
                 <tbody>{yield_rows if yield_rows else "<tr><td colspan='7'>Tidak ada blok dengan yield rendah + serangan signifikan</td></tr>"}</tbody></table>
             </section>
