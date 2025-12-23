@@ -435,19 +435,6 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
         if not prod_df.empty:
             # Filter only productive age (3-25 years) - exclude TBM (<3y) and old plants (>25y)
             productive_df = prod_df[(prod_df['Umur_Tahun'] >= 3) & (prod_df['Umur_Tahun'] <= 25)]
-            
-            # CRITICAL FIX: Filter to only blocks in current division's Ganoderma data
-            div_blocks_idx = []
-            for idx, row in productive_df.iterrows():
-                gano_pattern = convert_prod_to_gano_pattern(row['Blok_Prod'])
-                if not block_stats[block_stats['Blok'].str.contains(gano_pattern, na=False, regex=False)].empty:
-                    div_blocks_idx.append(idx)
-            
-            if div_blocks_idx:
-                productive_df = productive_df.loc[div_blocks_idx]
-            else:
-                productive_df = pd.DataFrame()  # No blocks in this division
-            
             if not productive_df.empty:
                 low_yield = productive_df.nsmallest(20, 'Yield_TonHa')  # Get top 20 candidates
                 
