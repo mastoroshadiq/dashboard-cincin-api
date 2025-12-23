@@ -369,15 +369,23 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
             prod_pattern = convert_gano_to_prod_pattern(r['Blok'])
             yield_matches = prod_df[prod_df['Blok_Prod'].str.contains(prod_pattern, na=False, regex=False)]
             
+            # Filter only productive age (3-25 years) - exclude TBM (<3y) and old plants (>25y)
+            if not yield_matches.empty:
+                yield_matches = yield_matches[(yield_matches['Umur_Tahun'] >= 3) & (yield_matches['Umur_Tahun'] <= 25)]
+            
+            # Skip block if no productive age match
+            if yield_matches.empty:
+                continue
+            
             # Get block names and metrics
-            blok_prod_name = yield_matches['Blok_Prod'].iloc[0] if not yield_matches.empty else r['Blok']
-            luas_ha = yield_matches['Luas_Ha'].mean() if not yield_matches.empty else None
-            produksi_real = yield_matches['Produksi_Ton'].mean() if not yield_matches.empty else None
-            produksi_pot = yield_matches['Potensi_Prod_Ton'].mean() if not yield_matches.empty else None
-            yield_val = yield_matches['Yield_TonHa'].mean() if not yield_matches.empty else None
-            potensi_yield = yield_matches['Potensi_Yield'].mean() if not yield_matches.empty else None
-            gap_yield = yield_matches['Gap_Yield'].mean() if not yield_matches.empty else None
-            umur_val = int(yield_matches['Umur_Tahun'].mean()) if not yield_matches.empty else None
+            blok_prod_name = yield_matches['Blok_Prod'].iloc[0]
+            luas_ha = yield_matches['Luas_Ha'].mean()
+            produksi_real = yield_matches['Produksi_Ton'].mean()
+            produksi_pot = yield_matches['Potensi_Prod_Ton'].mean()
+            yield_val = yield_matches['Yield_TonHa'].mean()
+            potensi_yield = yield_matches['Potensi_Yield'].mean()
+            gap_yield = yield_matches['Gap_Yield'].mean()
+            umur_val = int(yield_matches['Umur_Tahun'].mean())
             
             # Format values
             luas_str = f"{luas_ha:.1f}" if pd.notna(luas_ha) else "N/A"
@@ -425,8 +433,8 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
         # POV 2: Low yield blocks WITH RELEVANT Ganoderma attack (PRODUCTIVE PLANTS ONLY)
         yield_rows = ""
         if not prod_df.empty:
-            # Filter only mature/productive plants
-            productive_df = prod_df[prod_df['Umur_Tahun'] > 5]
+            # Filter only productive age (3-25 years) - exclude TBM (<3y) and old plants (>25y)
+            productive_df = prod_df[(prod_df['Umur_Tahun'] >= 3) & (prod_df['Umur_Tahun'] <= 25)]
             if not productive_df.empty:
                 low_yield = productive_df.nsmallest(20, 'Yield_TonHa')  # Get top 20 candidates
                 
@@ -483,14 +491,14 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
             
             <section class="pov-section">
                 <h3>🔥 POV 1: Ganoderma → Produktivitas</h3>
-                <p>Top 10 blok dengan serangan tertinggi dan analisis produktivitas lengkap<br><span style="color:#999; font-size:0.9em">📍 <b>Produksi</b> = Total Ton | <b>Yield</b> = Ton/Ha | <b>Gap</b> dengan color coding</span></p>
+                <p>Top 10 blok dengan serangan tertinggi dan analisis produktivitas lengkap<br><span style="color:#999; font-size:0.9em">📍 <b>Produksi</b> = Total Ton | <b>Yield</b> = Ton/Ha | <b>Filter</b> = Umur 3-25 tahun (produktif)</span></p>
                 <table><thead><tr><th>#</th><th>Blok</th><th>Total Pohon</th><th>MERAH</th><th>ORANYE</th><th>% Attack</th><th>Luas (Ha)</th><th>Real Prod (Ton)</th><th>Pot Prod (Ton)</th><th>Gap Prod</th><th>Yield Real</th><th>Yield Pot</th><th>Gap Yield</th><th>Umur</th><th>Dampak</th></tr></thead>
                 <tbody>{gano_rows}</tbody></table>
             </section>
             
             <section class="pov-section">
                 <h3>📉 POV 2: Produktivitas → Ganoderma</h3>
-                <p>Blok yield terendah DENGAN serangan Ganoderma (attack >5%)<br><span style="color:#999; font-size:0.9em">📌 Filter: Tanaman >5th + Attack >5% | <b>Relevansi</b> = Kekuatan korelasi serangan dengan yield rendah</span></p>
+                <p>Blok yield terendah DENGAN serangan Ganoderma (attack >5%)<br><span style="color:#999; font-size:0.9em">📌 Filter: Umur 3-25 tahun (produktif) + Attack >5% | <b>Relevansi</b> = Kekuatan korelasi serangan dengan yield rendah</span></p>
                 <table><thead><tr><th>#</th><th>Blok</th><th>Umur</th><th>Yield</th><th>Luas</th><th>% Attack</th><th>Relevansi</th></tr></thead>
                 <tbody>{yield_rows if yield_rows else "<tr><td colspan='7'>Tidak ada blok dengan yield rendah + serangan signifikan</td></tr>"}</tbody></table>
             </section>
