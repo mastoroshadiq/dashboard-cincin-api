@@ -465,8 +465,13 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
                         relevant_blocks.append({
                             'blok': r['Blok_Prod'],
                             'umur': int(r['Umur_Tahun']) if pd.notna(r['Umur_Tahun']) else 0,
-                            'yield': r['Yield_TonHa'],
                             'luas': r['Luas_Ha'],
+                            'produksi_real': r['Produksi_Ton'],
+                            'produksi_pot': r['Potensi_Prod_Ton'],
+                            'gap_prod': r['Potensi_Prod_Ton'] - r['Produksi_Ton'],
+                            'yield_real': r['Yield_TonHa'],
+                            'yield_pot': r['Potensi_Yield'],
+                            'gap_yield': r['Gap_Yield'],
                             'attack': attack
                         })
                 
@@ -483,7 +488,16 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
                         relevance = "🟡 LEMAH"
                         rel_color = "#f1c40f"
                     
-                    yield_rows += f'<tr><td>{i}</td><td><b>{block["blok"]}</b></td><td>{block["umur"]} th</td><td>{block["yield"]:.3f}</td><td>{block["luas"]:.1f}</td><td><b>{block["attack"]:.1f}%</b></td><td style="color:{rel_color}"><b>{relevance}</b></td></tr>'
+                    # Color code gap production
+                    gap_prod = block['gap_prod']
+                    if gap_prod > 30:
+                        gap_prod_color = "#e74c3c"
+                    elif gap_prod > 10:
+                        gap_prod_color = "#f39c12"
+                    else:
+                        gap_prod_color = "#27ae60"
+                    
+                    yield_rows += f'<tr><td>{i}</td><td><b>{block["blok"]}</b></td><td>{block["luas"]:.1f}</td><td>{block["produksi_real"]:.2f}</td><td>{block["produksi_pot"]:.2f}</td><td style="color:{gap_prod_color}"><b>{gap_prod:.2f}</b></td><td>{block["yield_real"]:.2f}</td><td>{block["yield_pot"]:.2f}</td><td>{block["gap_yield"]:.2f}</td><td>{block["umur"]} th</td><td><b>{block["attack"]:.1f}%</b></td><td style="color:{rel_color}"><b>{relevance}</b></td></tr>'
         
         divisi_tabs += f'<button class="tab {active}" onclick="switchTab(\'{divisi_id}\')" data-div="{divisi_id}">{divisi}</button>'
         
@@ -511,9 +525,9 @@ def generate_html(output_dir, all_results, all_maps, prod_df):
             
             <section class="pov-section">
                 <h3>📉 POV 2: Produktivitas → Ganoderma</h3>
-                <p>Blok yield terendah DENGAN serangan Ganoderma (attack >2%)<br><span style="color:#999; font-size:0.9em">📌 Filter: Umur 3-25 tahun (produktif) + Attack >2% | <b>Relevansi</b> = Kekuatan korelasi serangan dengan yield rendah</span></p>
-                <table><thead><tr><th>#</th><th>Blok</th><th>Umur</th><th>Yield</th><th>Luas</th><th>% Attack</th><th>Relevansi</th></tr></thead>
-                <tbody>{yield_rows if yield_rows else "<tr><td colspan='7'>Tidak ada blok dengan yield rendah + serangan signifikan</td></tr>"}</tbody></table>
+                <p>Blok yield terendah DENGAN serangan Ganoderma (attack >2%)<br><span style="color:#999; font-size:0.9em">📌 Filter: Umur 3-25 tahun + Attack >2% | Struktur sama dengan POV 1 untuk kemudahan perbandingan</span></p>
+                <table><thead><tr><th>#</th><th>Blok</th><th>Luas (Ha)</th><th>Real Prod (Ton)</th><th>Pot Prod (Ton)</th><th>Gap Prod</th><th>Yield Real</th><th>Yield Pot</th><th>Gap Yield</th><th>Umur</th><th>% Attack</th><th>Relevansi</th></tr></thead>
+                <tbody>{yield_rows if yield_rows else "<tr><td colspan='12'>Tidak ada blok dengan yield rendah + serangan signifikan</td></tr>"}</tbody></table>
             </section>
         </div>'''
     
