@@ -61,21 +61,22 @@ def load_productivity_data():
     df = df.rename(columns={
         'col_0': 'Blok_Prod', 'col_1': 'Tahun_Tanam', 'col_3': 'Divisi_Prod',
         'col_11': 'Luas_Ha', 'col_170': 'Produksi_Ton', 
-        'col_171': 'Yield_Realisasi', 'col_173': 'Potensi_Prod_Ton'  # FIXED: col_173 is Potensi 2025 in Ton
+        'col_173': 'Potensi_Prod_Ton'  # col_173 is Potensi 2025 in Ton
     })
     
     df['Luas_Ha'] = pd.to_numeric(df['Luas_Ha'], errors='coerce')
     df['Tahun_Tanam'] = pd.to_numeric(df['Tahun_Tanam'], errors='coerce')
     df['Produksi_Ton'] = pd.to_numeric(df['Produksi_Ton'], errors='coerce')
-    df['Yield_Realisasi'] = pd.to_numeric(df['Yield_Realisasi'], errors='coerce')
     df['Potensi_Prod_Ton'] = pd.to_numeric(df['Potensi_Prod_Ton'], errors='coerce')
     
-    # Calculate actual Luas from Produksi / Yield (more accurate than col_11 for yield calculation)
-    df['Luas_Actual'] = df['Produksi_Ton'] / df['Yield_Realisasi']
+    # RECALCULATE Yield Realisasi = Produksi / Luas (col_11)
+    # This ensures transparency and consistency with displayed Luas
+    df['Yield_Realisasi'] = df['Produksi_Ton'] / df['Luas_Ha']
+    df['Yield_Realisasi'] = df['Yield_Realisasi'].replace([np.inf, -np.inf], np.nan)
     
-    # Calculate Potensi Yield = Potensi Prod (Ton) / Luas Ha (use col_11 for consistency)
-    # User confirmed: Potensi col_173 is in TON, Luas col_11 is in Ha
+    # Calculate Potensi Yield = Potensi Prod (Ton) / Luas Ha
     df['Potensi_Yield'] = df['Potensi_Prod_Ton'] / df['Luas_Ha']
+    df['Potensi_Yield'] = df['Potensi_Yield'].replace([np.inf, -np.inf], np.nan)
     
     # Calculate Gap = Potensi - Realisasi (in yield)
     df['Gap_Yield'] = df['Potensi_Yield'] - df['Yield_Realisasi']
