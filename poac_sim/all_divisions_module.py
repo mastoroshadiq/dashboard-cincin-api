@@ -18,7 +18,7 @@ def load_ganoderma_block_stats():
         
         # col_55: STADIUM 1&2
         # col_56: STADIUM 3&4  
-        # col_58: %SERANGAN
+        # col_58: %SERANGAN (in decimal format 0-1, need to convert to 0-100)
         block_stats = df[['col_0', 'col_55', 'col_56', 'col_58']].copy()
         block_stats.columns = ['Blok', 'Stadium_12', 'Stadium_34', 'Attack_Pct']
         
@@ -27,11 +27,14 @@ def load_ganoderma_block_stats():
         block_stats['Stadium_34'] = pd.to_numeric(block_stats['Stadium_34'], errors='coerce').fillna(0)
         block_stats['Attack_Pct'] = pd.to_numeric(block_stats['Attack_Pct'], errors='coerce').fillna(0)
         
+        # Convert from decimal (0-1) to percentage (0-100)
+        block_stats['Attack_Pct'] = block_stats['Attack_Pct'] * 100
+        
         # Set block as index
         block_stats = block_stats.set_index('Blok')
         
-        # Remove blocks with no attack data
-        block_stats = block_stats[block_stats['Attack_Pct'] > 0]
+        # Keep ALL blocks (including 0% attack) for complete coverage
+        # block_stats = block_stats[block_stats['Attack_Pct'] > 0]  # REMOVED
         
         return block_stats
         
