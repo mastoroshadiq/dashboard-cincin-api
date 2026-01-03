@@ -156,8 +156,8 @@
                                 <span class="text-4xl font-black" id="areaValue">--</span>
                                 <span class="text-indigo-300 text-sm uppercase tracking-tighter">HA</span>
                             </div>
-                            <p class="text-[10px] text-white opacity-90 mt-1 font-black tracking-tighter" id="area-note"
-                                style="display: none;"></p>
+                            <p class="text-[10px] text-white opacity-90 mt-1 font-black tracking-tighter" id="areaNote">
+                                Berdasarkan total pohon × 64 m²/pohon</p>
                         </div>
                         <div
                             class="bg-red-500/10 backdrop-blur-sm p-6 rounded-2xl border border-red-500/30 ring-2 ring-red-500/20">
@@ -168,6 +168,9 @@
                                 <span
                                     class="text-red-400 text-sm uppercase tracking-tighter font-black">MILAR/THN</span>
                             </div>
+                            <p class="text-[10px] text-red-300 mt-2 font-bold italic" id="lossFormula">
+                                Formula: Pohon terinfeksi × 128 kg/thn × Rp 1.500/kg × 10 tahun
+                            </p>
                         </div>
                         <div class="bg-emerald-500/10 backdrop-blur-sm p-6 rounded-2xl border border-emerald-500/30">
                             <p class="text-emerald-400 text-[10px] font-black uppercase mb-1 tracking-widest">Biaya
@@ -1402,11 +1405,12 @@
                 // Potensi Kerugian Skala Makro - REALISTIC CALCULATIONS
                 ['potensiHeaderBlock', blockCode],
                 ['areaValue', ((data.total_pohon * 64) / 10000).toFixed(1)],  // Hectares from tree count
+                ['areaNote', `${data.total_pohon.toLocaleString()} pohon × 64 m²`],
 
                 // LOSS CALCULATION:
                 // Infected trees × avg productivity (20 ton/ha/yr) × TBS price (Rp 1,500/kg) × remaining years (10)
                 // = (merah + oranye) × (20000 kg / 156 trees/ha) × 1.5 × 10 / 1,000,000 (to get millions)
-                ['lossValue', `Rp ${(((data.merah + data.oranye) * 128 * 1.5 * 10) / 1000000).toFixed(2)}`],
+                ['lossValue', `Rp ${(((data.merah + data.oranye) * 128 * 1500 * 10) / 1000000).toFixed(1)}`],
 
                 // MITIGATION COST - PARIT ISOLASI:
                 // Perimeter around infected clusters = sqrt(infected_trees) × 8m × 4 sides
@@ -1430,10 +1434,18 @@
             const mitigationCost = ((Math.sqrt(infectedTrees) * 8 * 4 * 75000) / 1000000);
             const ratio = ((mitigationCost / lossValue) * 100).toFixed(1);
 
-            // Update mitigation ratio text
+            // Update mitigation ratio text with CORRECT economic interpretation
             const ratioEl = document.getElementById('mitigationRatio');
             if (ratioEl) {
-                ratioEl.textContent = `Hanya ${ratio}% dari potensi kerugian - SANGAT EFEKTIF!`;
+                if (ratio < 5) {
+                    ratioEl.textContent = `Hanya ${ratio}% dari kerugian - SANGAT EFEKTIF!`;
+                } else if (ratio < 10) {
+                    ratioEl.textContent = `${ratio}% dari kerugian - EFEKTIF`;
+                } else if (ratio < 20) {
+                    ratioEl.textContent = `${ratio}% dari kerugian - CUKUP EFEKTIF`;
+                } else {
+                    ratioEl.textContent = `${ratio}% dari kerugian - PERTIMBANGKAN ULANG`;
+                }
             }
 
             let successCount = 0;
