@@ -408,86 +408,81 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Peta F008A -->
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-white/20 card-hover">
-                        <div class="bg-gradient-to-r from-slate-800 to-slate-700 p-6 border-b-4 border-orange-500">
-                            <h3
-                                class="text-2xl font-black text-white uppercase tracking-tight flex items-center justify-between">
-                                <span>Blok F008A</span>
-                                <span class="text-sm bg-orange-600 px-4 py-1.5 rounded-full font-black">
-                                    Attack Rate: 12.2%
-                                </span>
-                            </h3>
-                            <div class="flex gap-6 mt-3 text-sm">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-red-600"></div>
-                                    <span class="text-white/90">90 Inti</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-orange-500"></div>
-                                    <span class="text-white/90">369 Cincin Api</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                                    <span class="text-white/90">141 Suspect</span>
-                                </div>
+                    <!-- KOLOM PETA KIRI (Dinamis) -->
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-white/20">
+                        <div class="bg-slate-800 p-4 border-b-4 border-indigo-500">
+                            <select id="mapSelectorLeft"
+                                class="w-full bg-slate-700 text-white font-black rounded-lg px-4 py-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4 cursor-pointer"></select>
+                            <div class="flex justify-between items-center text-white">
+                                <span class="text-xl font-black uppercase tracking-tight" id="mapTitleLeft">--</span>
+                                <span class="text-xs bg-indigo-600 px-3 py-1 rounded-full font-black" id="mapARLeft">AR:
+                                    --%</span>
                             </div>
                         </div>
-                        <div class="p-4 bg-slate-50">
-                            <img src="cincin_api_map_F008A.png" alt="Peta Cincin Api Blok F008A"
-                                class="w-full h-auto rounded-xl shadow-lg border-2 border-slate-200" />
+                        <div class="p-4 bg-slate-50 relative min-h-[300px] flex items-center justify-center">
+                            <img id="mapImgLeft" src="" alt="Peta Map"
+                                class="w-full h-auto rounded-xl shadow-lg border-2 border-slate-200"
+                                style="display:none;" />
+                            <div id="mapPlaceholderLeft" class="text-center text-slate-400 p-8">
+                                <svg class="mx-auto h-20 w-20 mb-4 opacity-20" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                <p class="font-bold uppercase tracking-widest text-xs">Peta Belum Tersedia</p>
+                            </div>
                         </div>
                         <div class="p-6 bg-slate-100 border-t-2 border-slate-200">
-                            <p class="text-xs text-slate-600 uppercase tracking-widest font-black mb-2">Interpretasi
-                                Peta:</p>
-                            <p class="text-sm text-slate-800 leading-relaxed">
-                                Cluster <span class="font-black text-red-600">MERAH</span> menunjukkan pusat infeksi
-                                aktif.
-                                Zona <span class="font-black text-orange-600">ORANYE</span> adalah "Ring of Fire" yang
-                                sedang menyebar ke pohon tetangga.
-                                Parit isolasi harus dibuat mengelilingi zona ini untuk menyelamatkan 3,409 pohon sehat.
-                            </p>
+                            <div class="flex gap-4 mb-4">
+                                <div class="text-[10px] font-black uppercase text-red-600">Inti: <span
+                                        id="mapIntiLeft">--</span></div>
+                                <div class="text-[10px] font-black uppercase text-orange-600">Ring: <span
+                                        id="mapRingLeft">--</span></div>
+                                <div class="text-[10px] font-black uppercase text-yellow-600">Susp: <span
+                                        id="mapSuspectLeft">--</span></div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 uppercase font-black mb-1 italic">Analisis Spasial:</p>
+                            <p id="mapInterpLeft" class="text-sm text-slate-800 leading-relaxed font-bold italic">--</p>
                         </div>
                     </div>
 
-                    <!-- Peta D001A -->
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-white/20 card-hover">
-                        <div class="bg-gradient-to-r from-slate-800 to-slate-700 p-6 border-b-4 border-orange-500">
-                            <h3
-                                class="text-2xl font-black text-white uppercase tracking-tight flex items-center justify-between">
-                                <span>Blok D001A</span>
-                                <span class="text-sm bg-orange-600 px-4 py-1.5 rounded-full font-black">
-                                    Attack Rate: 12.9%
-                                </span>
-                            </h3>
-                            <div class="flex gap-6 mt-3 text-sm">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-red-600"></div>
-                                    <span class="text-white/90">87 Inti</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-orange-500"></div>
-                                    <span class="text-white/90">362 Cincin Api</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                                    <span class="text-white/90">127 Suspect</span>
-                                </div>
+                    <!-- KOLOM PETA KANAN (Dinamis Benchmark) -->
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-white/20">
+                        <div class="bg-slate-800 p-4 border-b-4 border-orange-500">
+                            <select id="mapSelectorRight"
+                                class="w-full bg-slate-700 text-white font-black rounded-lg px-4 py-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-orange-500 mb-4 cursor-pointer"></select>
+                            <div class="flex justify-between items-center text-white">
+                                <span class="text-xl font-black uppercase tracking-tight" id="mapTitleRight">--</span>
+                                <span class="text-xs bg-orange-600 px-3 py-1 rounded-full font-black"
+                                    id="mapARRight">AR: --%</span>
                             </div>
                         </div>
-                        <div class="p-4 bg-slate-50">
-                            <img src="cincin_api_map_D001A.png" alt="Peta Cincin Api Blok D001A"
-                                class="w-full h-auto rounded-xl shadow-lg border-2 border-slate-200" />
+                        <div class="p-4 bg-slate-50 relative min-h-[300px] flex items-center justify-center">
+                            <img id="mapImgRight" src="" alt="Peta Map"
+                                class="w-full h-auto rounded-xl shadow-lg border-2 border-slate-200"
+                                style="display:none;" />
+                            <div id="mapPlaceholderRight" class="text-center text-slate-400 p-8">
+                                <svg class="mx-auto h-20 w-20 mb-4 opacity-20" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                <p class="font-bold uppercase tracking-widest text-xs">Peta Belum Tersedia</p>
+                            </div>
                         </div>
                         <div class="p-6 bg-slate-100 border-t-2 border-slate-200">
-                            <p class="text-xs text-slate-600 uppercase tracking-widest font-black mb-2">Interpretasi
-                                Peta:</p>
-                            <p class="text-sm text-slate-800 leading-relaxed">
-                                Cluster <span class="font-black text-red-600">MERAH</span> menunjukkan pusat infeksi
-                                aktif.
-                                Zona <span class="font-black text-orange-600">ORANYE</span> adalah "Ring of Fire" yang
-                                sedang menyebar ke pohon tetangga.
-                                Parit isolasi harus dibuat mengelilingi zona ini untuk menyelamatkan 3,122 pohon sehat.
+                            <div class="flex gap-4 mb-4">
+                                <div class="text-[10px] font-black uppercase text-red-600">Inti: <span
+                                        id="mapIntiRight">--</span></div>
+                                <div class="text-[10px] font-black uppercase text-orange-600">Ring: <span
+                                        id="mapRingRight">--</span></div>
+                                <div class="text-[10px] font-black uppercase text-yellow-600">Susp: <span
+                                        id="mapSuspectRight">--</span></div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 uppercase font-black mb-1 italic">Analisis Spasial:</p>
+                            <p id="mapInterpRight" class="text-sm text-slate-800 leading-relaxed font-bold italic">--
                             </p>
                         </div>
                     </div>
@@ -519,7 +514,7 @@
 
             <!-- Drilldown Detail Blok -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
-                <!-- Detail F008A -->
+                <!-- Detail KIRI -->
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
                         <h4 class="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
@@ -527,11 +522,11 @@
                                 fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-400">
                                 <path d="M21 21V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2Z" />
                             </svg>
-                            Detail Blok F008A (29.6 Ha)
+                            <span id="detailTitleLeft">Detail Blok F008A (29.6 Ha)</span>
                         </h4>
                         <span
                             class="bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse">Status:
-                            <span id="statusText">Darurat</span></span>
+                            <span id="detailStatusLeft">Darurat</span></span>
                     </div>
                     <div class="p-8 space-y-8">
                         <!-- Profil Agronomi -->
@@ -543,7 +538,7 @@
                                 </svg>
                                 <div>
                                     <p class="text-[10px] font-black uppercase text-indigo-400">Tahun Tanam / Usia</p>
-                                    <p class="text-lg font-black text-indigo-900" id="blockTT">2008 (18 Tahun)</p>
+                                    <p class="text-lg font-black text-indigo-900" id="detailTTLeft">--</p>
                                 </div>
                             </div>
                             <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3">
@@ -556,7 +551,7 @@
                                 </svg>
                                 <div>
                                     <p class="text-[10px] font-black uppercase text-slate-400">Kerapatan Tanam (SPH)</p>
-                                    <p class="text-lg font-black text-slate-900" id="blockSPH">127 Pokok/Ha</p>
+                                    <p class="text-lg font-black text-slate-900" id="detailSPHLeft">-- Pokok/Ha</p>
                                 </div>
                             </div>
                         </div>
@@ -565,12 +560,12 @@
                         <div class="p-4 bg-slate-900 text-white rounded-2xl flex items-center justify-between">
                             <div class="text-left">
                                 <p class="text-[10px] font-black uppercase text-indigo-400">Total Populasi Pohon</p>
-                                <p class="text-2xl font-black text-white" id="blockTotalPohon">3,745 <span
+                                <p class="text-2xl font-black text-white" id="detailPopLeft">-- <span
                                         class="text-xs uppercase">PKK</span></p>
                             </div>
                             <div class="text-right">
                                 <p class="text-[10px] font-black uppercase text-red-400">Tanaman Sisip</p>
-                                <p class="text-2xl font-black text-white" id="blockSisip">142 <span
+                                <p class="text-2xl font-black text-white" id="detailSisipLeft">-- <span
                                         class="text-xs uppercase">PKK</span>
                                 </p>
                             </div>
@@ -584,18 +579,18 @@
                             <div class="grid grid-cols-3 gap-4">
                                 <div class="bg-red-50 p-4 rounded-2xl border border-red-100 text-center">
                                     <p class="text-[10px] font-black text-red-600 uppercase mb-1">Infeksi Inti</p>
-                                    <p class="text-2xl font-black text-red-700" id="blockMerahCount">90 <span
+                                    <p class="text-2xl font-black text-red-700" id="detailMerahLeft">-- <span
                                             class="text-[10px] uppercase text-black">PKK</span></p>
                                 </div>
                                 <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 text-center">
                                     <p class="text-[10px] font-black text-orange-600 uppercase mb-1">Cincin Api</p>
-                                    <p class="text-2xl font-black text-orange-700" id="blockOranyeCount">369 <span
+                                    <p class="text-2xl font-black text-orange-700" id="detailOranyeLeft">-- <span
                                             class="text-[10px] uppercase text-black">PKK</span></p>
                                 </div>
                                 <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100 text-center">
                                     <p class="text-[10px] font-black text-yellow-600 uppercase mb-1">Berisiko</p>
-                                    <p class="text-2xl font-black text-yellow-700" id="blockKuningCount">141 <span
-                                            class="text-[10px] uppercase text-black">PKK</span></p>
+                                    <p class="text-2xl font-black text-yellow-700" id="detailKuningLeft">-- <span
+                                            class="text-[10px) uppercase text-black">PKK</span></p>
                                 </div>
                             </div>
                         </div>
@@ -614,18 +609,19 @@
                                     <p class="text-[8px] font-black uppercase text-white/50 mb-2 tracking-tighter">
                                         Realisasi vs Potensi Tahun 2025</p>
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-4xl font-black text-red-500">8.7%</span>
+                                        <span class="text-4xl font-black text-red-500" id="detailGapLeft">--%</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex-1 bg-slate-50 p-6 rounded-[2rem] border border-slate-200">
                                 <p class="text-[10px] font-black uppercase tracking-widest text-black mb-1 opacity-60">
                                     Total Loss (1 Blok Penuh)</p>
-                                <p class="text-[8px] font-black uppercase text-black/40 mb-2 italic tracking-tighter">
-                                    Estimasi Kerugian Luas 29.6 Ha</p>
+                                <p class="text-[8px] font-black uppercase text-black/40 mb-2 italic tracking-tighter"
+                                    id="detailLossHaLeft">
+                                    Estimasi Kerugian Luas -- Ha</p>
                                 <div class="flex items-baseline gap-1">
                                     <span class="text-sm font-black uppercase text-black">Rp</span>
-                                    <span class="text-3xl font-black text-black">569.6</span>
+                                    <span class="text-3xl font-black text-black" id="detailLossValLeft">--</span>
                                     <span
                                         class="text-sm font-black uppercase tracking-tighter italic text-black">JUTA</span>
                                 </div>
@@ -634,7 +630,7 @@
                     </div>
                 </div>
 
-                <!-- Detail D001A -->
+                <!-- Detail KANAN -->
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
                         <h4 class="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
@@ -642,11 +638,11 @@
                                 fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-400">
                                 <path d="M21 21V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2Z" />
                             </svg>
-                            Detail Blok D001A (25.8 Ha)
+                            <span id="detailTitleRight">Detail Blok D001A (25.8 Ha)</span>
                         </h4>
                         <span
                             class="bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse">Status:
-                            Darurat</span>
+                            <span id="detailStatusRight">Darurat</span></span>
                     </div>
                     <div class="p-8 space-y-8">
                         <!-- Profil Agronomi -->
@@ -658,7 +654,7 @@
                                 </svg>
                                 <div>
                                     <p class="text-[10px] font-black uppercase text-indigo-400">Tahun Tanam / Usia</p>
-                                    <p class="text-lg font-black text-indigo-900">2009 (17 Tahun)</p>
+                                    <p class="text-lg font-black text-indigo-900" id="detailTTRight">--</p>
                                 </div>
                             </div>
                             <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3">
@@ -671,7 +667,7 @@
                                 </svg>
                                 <div>
                                     <p class="text-[10px] font-black uppercase text-slate-400">Kerapatan Tanam (SPH)</p>
-                                    <p class="text-lg font-black text-slate-900">135 Pokok/Ha</p>
+                                    <p class="text-lg font-black text-slate-900" id="detailSPHRight">-- Pokok/Ha</p>
                                 </div>
                             </div>
                         </div>
@@ -680,12 +676,12 @@
                         <div class="p-4 bg-slate-900 text-white rounded-2xl flex items-center justify-between">
                             <div class="text-left">
                                 <p class="text-[10px] font-black uppercase text-indigo-400">Total Populasi Pohon</p>
-                                <p class="text-2xl font-black text-white">3,484 <span
+                                <p class="text-2xl font-black text-white" id="detailPopRight">-- <span
                                         class="text-xs uppercase">PKK</span></p>
                             </div>
                             <div class="text-right">
                                 <p class="text-[10px] font-black uppercase text-red-400">Tanaman Sisip</p>
-                                <p class="text-2xl font-black text-white">2,843 <span
+                                <p class="text-2xl font-black text-white" id="detailSisipRight">-- <span
                                         class="text-xs uppercase">PKK</span>
                                 </p>
                             </div>
@@ -699,17 +695,17 @@
                             <div class="grid grid-cols-3 gap-4">
                                 <div class="bg-red-50 p-4 rounded-2xl border border-red-100 text-center">
                                     <p class="text-[10px] font-black text-red-600 uppercase mb-1">Infeksi Inti</p>
-                                    <p class="text-2xl font-black text-red-700">87 <span
+                                    <p class="text-2xl font-black text-red-700" id="detailMerahRight">-- <span
                                             class="text-[10px] uppercase text-black">PKK</span></p>
                                 </div>
                                 <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 text-center">
                                     <p class="text-[10px] font-black text-orange-600 uppercase mb-1">Cincin Api</p>
-                                    <p class="text-2xl font-black text-orange-700">362 <span
+                                    <p class="text-2xl font-black text-orange-700" id="detailOranyeRight">-- <span
                                             class="text-[10px] uppercase text-black">PKK</span></p>
                                 </div>
                                 <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100 text-center">
                                     <p class="text-[10px] font-black text-yellow-600 uppercase mb-1">Berisiko</p>
-                                    <p class="text-2xl font-black text-yellow-700">127 <span
+                                    <p class="text-2xl font-black text-yellow-700" id="detailKuningRight">-- <span
                                             class="text-[10px] uppercase text-black">PKK</span></p>
                                 </div>
                             </div>
@@ -729,18 +725,19 @@
                                     <p class="text-[8px] font-black uppercase text-white/50 mb-2 tracking-tighter">
                                         Realisasi vs Potensi Tahun 2025</p>
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-4xl font-black text-red-500">-21.3%</span>
+                                        <span class="text-4xl font-black text-red-500" id="detailGapRight">--%</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex-1 bg-slate-50 p-6 rounded-[2rem] border border-slate-200">
                                 <p class="text-[10px] font-black uppercase tracking-widest text-black mb-1 opacity-60">
                                     Total Loss (1 Blok Penuh)</p>
-                                <p class="text-[8px] font-black uppercase text-black/40 mb-2 italic tracking-tighter">
-                                    Estimasi Kerugian Luas 25.8 Ha</p>
+                                <p class="text-[8px] font-black uppercase text-black/40 mb-2 italic tracking-tighter"
+                                    id="detailLossHaRight">
+                                    Estimasi Kerugian Luas -- Ha</p>
                                 <div class="flex items-baseline gap-1">
                                     <span class="text-sm font-black uppercase text-black">Rp</span>
-                                    <span class="text-3xl font-black text-black">638.4</span>
+                                    <span class="text-3xl font-black text-black" id="detailLossValRight">--</span>
                                     <span
                                         class="text-sm font-black uppercase tracking-tighter italic text-black">JUTA</span>
                                 </div>
@@ -1361,37 +1358,71 @@
 
             populateDropdown();
 
-            // Attach event listener
-            const selector = document.getElementById('blockSelector');
-            if (selector) {
-                selector.addEventListener('change', function () {
-                    updateDashboard(this.value);
-                });
+            // Attach event listeners
+            const topSelector = document.getElementById('blockSelector');
+            const mapLeft = document.getElementById('mapSelectorLeft');
+            const mapRight = document.getElementById('mapSelectorRight');
 
-                // Auto-select first block (highest attack rate)
-                const firstBlock = Object.keys(BLOCKS_DATA)[0];
-                if (firstBlock) {
-                    selector.value = firstBlock;
+            if (topSelector) {
+                topSelector.addEventListener('change', function () {
+                    updateDashboard(this.value);
+                    // Also sync left map by default
+                    if (mapLeft) {
+                        mapLeft.value = this.value;
+                        updateMapColumn('Left', this.value);
+                    }
+                });
+            }
+
+            if (mapLeft) {
+                mapLeft.addEventListener('change', function () {
+                    updateMapColumn('Left', this.value);
+                });
+            }
+
+            if (mapRight) {
+                mapRight.addEventListener('change', function () {
+                    updateMapColumn('Right', this.value);
+                });
+            }
+
+            // Auto-select first block for all
+            const firstBlock = Object.keys(BLOCKS_DATA)[0];
+            const benchmarkBlock = BLOCKS_DATA['D001A'] ? 'D001A' : firstBlock;
+
+            if (firstBlock) {
+                if (topSelector) {
+                    topSelector.value = firstBlock;
                     updateDashboard(firstBlock);
+                }
+                if (mapLeft) {
+                    mapLeft.value = firstBlock;
+                    updateMapColumn('Left', firstBlock);
+                }
+                if (mapRight) {
+                    mapRight.value = benchmarkBlock;
+                    updateMapColumn('Right', benchmarkBlock);
                 }
             }
         });
 
         // Populate dropdown
         function populateDropdown() {
-            const selector = document.getElementById('blockSelector');
-            if (!selector) return;
-
+            const selectors = ['blockSelector', 'mapSelectorLeft', 'mapSelectorRight'];
             const sorted = Object.entries(BLOCKS_DATA).sort((a, b) => a[1].rank - b[1].rank);
-
-            selector.innerHTML = sorted.map(([code, data]) =>
+            const optionsHtml = sorted.map(([code, data]) =>
                 `<option value="${code}">#${data.rank} - ${code} | ${data.attack_rate}% | ${data.severity}</option>`
             ).join('');
+
+            selectors.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = optionsHtml;
+            });
 
             const totalEl = document.getElementById('totalBlocks');
             if (totalEl) totalEl.textContent = sorted.length;
 
-            console.log('✅ Populated dropdown with', sorted.length, 'blocks');
+            console.log('✅ Populated 3 dropdowns with', sorted.length, 'blocks');
         }
 
         // Update dashboard comprehensively
@@ -1493,40 +1524,69 @@
             // Update page title
             document.title = `Dashboard Cincin Api - ${blockCode} (${data.attack_rate}%)`;
 
-            // Update cluster map if it exists
-            updateClusterMap(blockCode, data);
         }
 
-        // Update cluster map
-        function updateClusterMap(blockCode, data) {
-            const mapImages = document.querySelectorAll('img[src*="cincin_api_map"]');
+        // Update specific Map Column & Detail Card
+        function updateMapColumn(side, blockCode) {
+            const data = BLOCKS_DATA[blockCode];
+            if (!data) return;
 
-            if (mapImages.length > 0) {
-                mapImages.forEach(img => {
-                    if (blockCode === 'F008A' || blockCode === 'D001A') {
-                        img.src = data.map_filename;
-                        img.alt = `Peta Kluster ${blockCode}`;
-                        img.style.display = 'block';
-                    } else {
-                        // Hide map, show placeholder message
-                        img.style.display = 'none';
-                        const parent = img.parentElement;
-                        if (parent && !parent.querySelector('.map-placeholder')) {
-                            const placeholder = document.createElement('div');
-                            placeholder.className = 'map-placeholder bg-gray-100 rounded p-12 text-center text-gray-500';
-                            placeholder.innerHTML = `
-                                <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                <p class="font-bold">Peta cluster belum tersedia untuk ${blockCode}</p>
-                                <p class="text-sm mt-2">Hanya F008A dan D001A yang memiliki peta cluster saat ini</p>
-                            `;
-                            parent.appendChild(placeholder);
-                        }
-                    }
-                });
-                console.log('✅ Updated cluster map display');
+            // 1. Header info peta
+            document.getElementById(`mapTitle${side}`).textContent = `Blok ${blockCode}`;
+            document.getElementById(`mapAR${side}`).textContent = `AR: ${data.attack_rate}%`;
+
+            // 2. Statistics peta (mini)
+            document.getElementById(`mapInti${side}`).textContent = data.merah;
+            document.getElementById(`mapRing${side}`).textContent = data.oranye;
+            document.getElementById(`mapSuspect${side}`).textContent = data.kuning;
+
+            // 3. Update Detail Blok Card (Dinamis Selection)
+            document.getElementById(`detailTitle${side}`).textContent = `Detail Blok ${blockCode} (${data.luas_ha} Ha)`;
+            document.getElementById(`detailStatus${side}`).textContent = data.severity || (data.attack_rate > 5 ? 'Darurat' : 'Waspada');
+            document.getElementById(`detailTT${side}`).textContent = `${data.tt} (${data.age} Tahun)`;
+            document.getElementById(`detailSPH${side}`).textContent = `${data.sph} Pokok/Ha`;
+            document.getElementById(`detailPop${side}`).textContent = data.total_pohon.toLocaleString();
+            document.getElementById(`detailSisip${side}`).textContent = data.sisip ? data.sisip.toLocaleString() : 'N/A';
+
+            document.getElementById(`detailMerah${side}`).textContent = data.merah;
+            document.getElementById(`detailOranye${side}`).textContent = data.oranye;
+            document.getElementById(`detailKuning${side}`).textContent = data.kuning;
+
+            // Financial & Production Stats
+            const gapVal = data.gap_pct || 0;
+            const gapEl = document.getElementById(`detailGap${side}`);
+            gapEl.textContent = `${gapVal > 0 ? '+' : ''}${gapVal}%`;
+            gapEl.className = gapVal < 0 ? "text-4xl font-black text-red-500" : "text-4xl font-black text-emerald-500";
+
+            document.getElementById(`detailLossHa${side}`).textContent = `Estimasi Kerugian Luas ${data.luas_ha} Ha`;
+
+            // Replicate loss calculation: gap * luas * 1.5 Juta
+            const lossVal = data.gap_pct < 0 ? (Math.abs(data.gap_ton_ha) * data.luas_ha * 1.5).toFixed(1) : "0.0";
+            document.getElementById(`detailLossVal${side}`).textContent = lossVal;
+
+            // 4. Interpretation Text
+            const interpEl = document.getElementById(`mapInterp${side}`);
+            if (gapVal < 0) {
+                interpEl.innerHTML = `Cluster <span class="text-red-600">MERAH</span> mulai menyebar. Strategi mitigasi parit isolasi harus dilakukan segera untuk melindungi <span class="text-emerald-700 underline">${(data.total_pohon - (data.merah + data.oranye)).toLocaleString()} pohon sehat</span> sebelum surplus produksi hilang.`;
+            } else {
+                interpEl.innerHTML = `Penyebaran aktif di zona <span class="text-orange-600">ORANYE</span>. SPH sudah menurun, butuh penanganan agresif agar kluster tidak menyatu (Fenomena <span class="font-bold underline">SYMPTOM LAG</span>).`;
             }
+
+            // 5. Map Image vs Placeholder
+            const img = document.getElementById(`mapImg${side}`);
+            const placeholder = document.getElementById(`mapPlaceholder${side}`);
+
+            if (data.has_map) {
+                img.src = data.map_filename;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.querySelector('p').textContent = `Peta Spasial Belum Tersedia untuk ${blockCode}`;
+            }
+
+            console.log(`🗺️ Updated Map & Detail ${side} for:`, blockCode);
         }
 
         // Tab switching function (from original dashboard)
