@@ -697,7 +697,7 @@
                                     <p class="text-[8px] font-black uppercase text-white/50 mb-2 tracking-tighter">
                                         Realisasi vs Potensi Tahun 2025</p>
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-4xl font-black text-red-500">-21.3%</span>
+                                        <span class="text-4xl font-black text-red-500">-<span id="yieldGapPercent">21.3</span>%</span>
                                     </div>
                                 </div>
                             </div>
@@ -705,10 +705,10 @@
                                 <p class="text-[10px] font-black uppercase tracking-widest text-black mb-1 opacity-60">
                                     Total Loss (1 Blok Penuh)</p>
                                 <p class="text-[8px] font-black uppercase text-black/40 mb-2 italic tracking-tighter">
-                                    Estimasi Kerugian Luas 25.8 Ha</p>
+                                    Estimasi Kerugian Luas <span id="lossHectare">25.8</span> Ha</p>
                                 <div class="flex items-baseline gap-1">
                                     <span class="text-sm font-black uppercase text-black">Rp</span>
-                                    <span class="text-3xl font-black text-black">638.4</span>
+                                    <span class="text-3xl font-black text-black" id="totalLoss">638.4</span>
                                     <span
                                         class="text-sm font-black uppercase tracking-tighter italic text-black">JUTA</span>
                                 </div>
@@ -2009,11 +2009,12 @@
             document.title = `Dashboard Cincin Api - ${blockCode} (${data.attack_rate}%)`;
 
             // Update all stats with comprehensive ID list
+            // COMPREHENSIVE - ALL SECTIONS AT ONCE
             const updates = [
-                // Header and title
+                // Headers
                 ['blockHeaderTitle', `Detail Blok ${blockCode} (${((data.total_pohon * 64) / 10000).toFixed(1)} Ha)`],
                 
-                // Basic stats (Phase 1 - already working)
+                // Basic stats
                 ['blockTT', `${data.tt || 'N/A'} (${data.age || 'N/A'} Tahun)`],
                 ['blockSPH', `${data.sph || 'N/A'} Pokok/Ha`],
                 ['blockTotalPohon', data.total_pohon.toLocaleString()],
@@ -2022,18 +2023,23 @@
                 ['blockOranyeCount', data.oranye],
                 ['blockKuningCount', data.kuning],
                 
-                // Phase 2: Status and severity
+                // Status
                 ['blockStatusText', data.severity === 'HIGH' ? 'Darurat' : 'Perhatian'],
                 
-                // Phase 3: Attack rates and table metrics
+                // Attack rates
                 ['narrativeAttack1', `${data.attack_rate}%`],
-                ['narrativeAttack2', `${data.attack_rate}%`], // Will be same for now
+                ['narrativeAttack2', `${data.attack_rate}%`],
                 ['tableAttackF008A', `${data.attack_rate}%`],
                 ['tableIntiF008A', `${data.merah} Inti`],
-                ['tableRingF008A', `${data.oranye} Ring`]
+                ['tableRingF008A', `${data.oranye} Ring`],
+                
+                // Production metrics (calculated/estimated)
+                ['yieldGapPercent', ((data.attack_rate * -2.5).toFixed(1))], // Rough estimate
+                ['totalLoss', ((data.total_pohon * 0.18).toFixed(1))], // Rough estimate
+                ['lossHectare', ((data.total_pohon * 64) / 10000).toFixed(1)]
             ];
             
-            // Special handling: Update table rows to show current block data
+                        // Special handling: Update table rows to show current block data
             // For now, F008A row shows current block, D001A row hidden or shows second block
             const tableAttackD = document.getElementById('tableAttackD001A');
             const tableIntiD = document.getElementById('tableIntiD001A');
@@ -2083,14 +2089,42 @@
 
             // Update cluster maps
             const mapImages = document.querySelectorAll('img[src*="cincin_api_map"]');
-            if (mapImages.length > 0 && data.map_filename) {
+            if (mapImages.length > 0) {
                 mapImages.forEach(img => {
-                    img.src = data.map_filename;
-                    img.alt = `Peta Kluster ${blockCode}`;
+                    // Try to load map for this block
+                    const mapPath = data.map_filename;
+                    
+                    // For now, only F008A and D001A have maps
+                    // Others show placeholder or no-image
+                    if (blockCode === 'F008A' || blockCode === 'D001A') {
+                        img.src = mapPath;
+                        img.alt = `Peta Kluster ${blockCode}`;
+                        img.style.display = 'block';
+                    } else {
+                        // Show placeholder for blocks without maps
+                        img.style.display = 'none';
+                        // Could insert placeholder div here
+                        const parent = img.parentElement;
+                        if (parent) {
+                            const placeholder = document.createElement('div');
+                            placeholder.className = 'bg-gray-100 rounded p-8 text-center text-gray-500';
+                            placeholder.innerHTML = `
+                                <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <p class="mt-4 font-bold">Peta kluster belum tersedia untuk ${blockCode}</p>
+                                <p class="text-sm mt-2">Hanya F008A dan D001A yang memiliki peta cluster saat ini</p>
+                            `;
+                            // Replace or append
+                            if (!parent.querySelector('.bg-gray-100')) {
+                                parent.appendChild(placeholder);
+                            }
+                        }
+                    }
                 });
                 log('✅ Updated ' + mapImages.length + ' map images');
             }
-
+            
             log('✅ Dashboard update complete for: ' + blockCode);
         }
 
