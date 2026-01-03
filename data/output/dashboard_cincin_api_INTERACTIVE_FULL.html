@@ -118,13 +118,13 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                         <div>
                             <h2 class="text-xl font-bold flex items-center gap-2 text-white">
-                                ⚡ Potensi Kerugian Skala Makro (Impact Escalation)
+                                ⚡ Potensi Kerugian Blok <span id="potensiHeaderBlock">--</span>
                             </h2>
                             <p class="text-white opacity-80 text-sm italic">
-                                Ekstrapolasi temuan sampel ke wilayah operasional yang lebih luas.
+                                Estimasi dampak ekonomi untuk blok terpilih berdasarkan tingkat serangan aktual.
                             </p>
                             <!-- 3 SCALING BUTTONS -->
-                            <div class="flex bg-white/10 p-1 rounded-lg gap-1">
+                            <div class="flex bg-white/10 p-1 rounded-lg gap-1" style="display: none;">
                                 <button onclick="setScale('block')" id="scale-block"
                                     class="px-4 py-1.5 rounded-md text-xs font-black transition-all bg-white text-slate-900 shadow-lg">2
                                     Blok Sampel</button>
@@ -143,7 +143,7 @@
                             <p class="text-indigo-300 text-[10px] font-black uppercase mb-1 tracking-widest">Cakupan
                                 Wilayah</p>
                             <div class="flex items-baseline gap-2">
-                                <span class="text-4xl" id="area-value">55.4</span>
+                                <span class="text-4xl font-black" id="areaValue">--</span>
                                 <span class="text-indigo-300 text-sm uppercase tracking-tighter">HA</span>
                             </div>
                             <p class="text-[10px] text-white opacity-90 mt-1 font-black tracking-tighter" id="area-note"
@@ -154,7 +154,7 @@
                             <p class="text-red-400 text-[10px] font-black uppercase mb-1 tracking-widest">Potensi
                                 Kerugian</p>
                             <div class="flex items-baseline gap-2">
-                                <span class="text-4xl text-red-400 font-black" id="loss-value">Rp 0.182</span>
+                                <span class="text-4xl text-red-400 font-black" id="lossValue">Rp --</span>
                                 <span
                                     class="text-red-400 text-sm uppercase tracking-tighter font-black">MILAR/THN</span>
                             </div>
@@ -163,7 +163,7 @@
                             <p class="text-emerald-400 text-[10px] font-black uppercase mb-1 tracking-widest">Biaya
                                 Mitigasi</p>
                             <div class="flex items-baseline gap-2">
-                                <span class="text-4xl text-emerald-400 font-black" id="mitigation-value">Rp 0.1</span>
+                                <span class="text-4xl text-emerald-400 font-black" id="mitigationValue">Rp --</span>
                                 <span
                                     class="text-emerald-400 text-sm uppercase tracking-tighter font-black">MILAR</span>
                             </div>
@@ -1383,10 +1383,11 @@
                 ['blockOranyeCount', data.oranye],
                 ['blockKuningCount', data.kuning],
                 
-                // Potensi Kerugian Makro (CALCULATED)
-                ['cakupanWilayah', ((data.total_pohon * 64) / 10000).toFixed(1)],  // Hectares
-                ['potensiKerugian', ((data.total_pohon * 0.35).toFixed(0))],  // Rough estimate in millions
-                ['biayaMitigasi', ((data.merah * 0.002).toFixed(1))],  // Rough estimate
+                // Potensi Kerugian Skala Makro - SINGLE BLOCK
+                ['potensiHeaderBlock', blockCode],
+                ['areaValue', ((data.total_pohon * 64) / 10000).toFixed(1)],  // Hectares
+                ['lossValue', `Rp ${((data.total_pohon * data.attack_rate * 0.03).toFixed(2))}`],  // Loss based on attack rate
+                ['mitigationValue', `Rp ${((data.merah * 1.5) / 1000).toFixed(2)}`]  // Mitigation cost from infected trees
                 
                 // Kartu Bukti Ilmiah - COMPREHENSIVE
                 ['card1TTFull', `TT ${data.tt || 2008} (Usia ${data.age || 18} Tahun)`],
