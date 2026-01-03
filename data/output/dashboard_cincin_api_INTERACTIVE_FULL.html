@@ -169,7 +169,7 @@
                                     class="text-red-400 text-sm uppercase tracking-tighter font-black">MILAR/THN</span>
                             </div>
                             <p class="text-[10px] text-red-300 mt-2 font-bold italic" id="lossFormula">
-                                Formula: Pohon terinfeksi × 128 kg/thn × Rp 1.500/kg × 10 tahun
+                                Formula: Pohon terinfeksi × 128 kg/thn × Rp 1.500/kg × 1 tahun
                             </p>
                         </div>
                         <div class="bg-emerald-500/10 backdrop-blur-sm p-6 rounded-2xl border border-emerald-500/30">
@@ -1409,8 +1409,8 @@
 
                 // LOSS CALCULATION:
                 // Infected trees × avg productivity (20 ton/ha/yr) × TBS price (Rp 1,500/kg) × remaining years (10)
-                // = (merah + oranye) × (20000 kg / 156 trees/ha) × 1.5 × 10 / 1,000,000 (to get millions)
-                ['lossValue', `Rp ${(((data.merah + data.oranye) * 128 * 1500 * 10) / 1000000).toFixed(1)}`],
+                // = (merah + oranye) × 128 kg/tree/yr × 1500 Rp/kg × 1 year / 1,000,000
+                ['lossValue', `Rp ${(((data.merah + data.oranye) * 128 * 1500 * 1) / 1000000).toFixed(1)}`],
 
                 // MITIGATION COST - PARIT ISOLASI:
                 // Perimeter around infected clusters = sqrt(infected_trees) × 8m × 4 sides
@@ -1430,7 +1430,7 @@
 
             // Calculate mitigation efficiency ratio
             const infectedTrees = data.merah + data.oranye;
-            const lossValue = ((infectedTrees * 128 * 1.5 * 10) / 1000000);
+            const lossValue = ((infectedTrees * 128 * 1500 * 1) / 1000000);
             const mitigationCost = ((Math.sqrt(infectedTrees) * 8 * 4 * 75000) / 1000000);
             const ratio = ((mitigationCost / lossValue) * 100).toFixed(1);
 
