@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cincin Api - Interactive AME II (All Blocks)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        @keyframes flashGreen {
+
+            0%,
+            100% {
+                background-color: transparent;
+            }
+
+            50% {
+                background-color: #10b981;
+                color: white;
+            }
+        }
+
+        .flash-update {
+            animation: flashGreen 0.6s ease-in-out;
+        }
+
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-slate-50 p-4 md:p-8">
+
+    <!-- Header -->
+    <div class="max-w-7xl mx-auto mb-6">
+        <div class="flex items-center gap-2 mb-4">
+            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black uppercase">
+                Interactive Dashboard
+            </span>
+            <span class="text-xs font-bold text-gray-600" id="updateInfo">
+                Update: <span id="headerBlockCode">Loading...</span>
+            </span>
+        </div>
+        <h1 class="text-3xl font-black text-black">🔥 Dashboard Cincin Api - AME II</h1>
+        <p class="text-gray-700 mt-1">Analisis Krusialitas & Eskalasi Dampak - Interactive Block Selector</p>
+    </div>
+
+    <!-- Block Selector -->
+    <div class="max-w-7xl mx-auto mb-6">
+        <div class="bg-gradient-to-br from-indigo-900 to-blue-900 rounded-2xl p-6 border-2 border-indigo-500 shadow-xl">
+            <label for="blockSelector" class="block text-lg font-black uppercase mb-3 text-white">
+                📍 Select Block (AME II)
+            </label>
+            <select id="blockSelector"
+                class="w-full bg-slate-800 border-2 border-indigo-400 rounded-xl p-4 text-white font-bold text-lg focus:outline-none focus:ring-4 focus:ring-indigo-500">
+                <option value="">-- Loading blocks --</option>
+            </select>
+            <p class="text-xs text-white/60 mt-2">Total: <span id="totalBlocks">36</span> blocks | Sorted by attack rate
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboardContent" class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Block Summary Card -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg border-2 border-indigo-200">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-900" id="blockTitle">BLOK --</h2>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Rank: <span id="blockRank" class="font-bold text-yellow-600">#--</span> |
+                        Severity: <span id="blockSeverity" class="font-bold">--</span>
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class="text-5xl font-black text-red-600" id="attackRate">--.-%</p>
+                    <p class="text-sm text-gray-600 font-bold">Attack Rate</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                    <p class="text-xs font-bold text-red-700 uppercase mb-1">🔴 Merah</p>
+                    <p class="text-3xl font-black text-red-900" id="merahCount">--</p>
+                    <p class="text-xs text-gray-500">Infeksi Inti</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-xl border border-orange-200">
+                    <p class="text-xs font-bold text-orange-700 uppercase mb-1">🔥 Oranye</p>
+                    <p class="text-3xl font-black text-orange-900" id="oranyeCount">--</p>
+                    <p class="text-xs text-gray-500">Cincin Api</p>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+                    <p class="text-xs font-bold text-yellow-700 uppercase mb-1">🟡 Kuning</p>
+                    <p class="text-3xl font-black text-yellow-900" id="kuningCount">--</p>
+                    <p class="text-xs text-gray-500">Suspect</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                    <p class="text-xs font-bold text-green-700 uppercase mb-1">🟢 Hijau</p>
+                    <p class="text-3xl font-black text-green-900" id="hijauCount">--</p>
+                    <p class="text-xs text-gray-500">Sehat</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Block Details -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+                <p class="text-xs font-bold text-indigo-600 uppercase mb-2">Total Populasi</p>
+                <p class="text-3xl font-black text-gray-900">
+                    <span id="totalPohon">--</span> <span class="text-sm">PKK</span>
+                </p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+                <p class="text-xs font-bold text-indigo-600 uppercase mb-2">SPH (Stand/Ha)</p>
+                <p class="text-3xl font-black text-gray-900" id="sph">--</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+                <p class="text-xs font-bold text-indigo-600 uppercase mb-2">Tahun Tanam</p>
+                <p class="text-3xl font-black text-gray-900">
+                    <span id="tt">--</span>
+                    <span class="text-sm text-gray-500">(<span id="age">--</span> thn)</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Cluster Map -->
+        <div class="bg-white rounded-2xl p-6 shadow border border-gray-200">
+            <h3 class="text-xl font-black text-gray-900 mb-4">🗺️ Peta Kluster Cincin Api</h3>
+            <div id="mapContainer"
+                class="bg-gray-50 rounded-xl border-2 border-gray-300 min-h-[400px] flex items-center justify-center">
+                <div class="text-center text-gray-400">
+                    <svg class="mx-auto h-24 w-24 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
+                        </path>
+                    </svg>
+                    <p class="font-bold">Select a block to view cluster map</p>
+                    <p class="text-sm mt-2">Maps available for F008A and D001A</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Embedded Data -->
+    <script src="blocks_data_embed.js"></script>
+
+    <!-- Interactive Controller -->
+    <script>
+        let currentBlockData = null;
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Interactive Dashboard Loading...');
+
+            if (typeof BLOCKS_DATA === 'undefined') {
+                alert('Error: Block data not loaded');
+                return;
+            }
+
+            console.log('✅ Loaded', Object.keys(BLOCKS_DATA).length, 'blocks');
+
+            populateDropdown();
+
+            // Event listener
+            document.getElementById('blockSelector').addEventListener('change', function () {
+                updateDashboard(this.value);
+            });
+
+            // Auto-select first
+            const first = Object.keys(BLOCKS_DATA)[0];
+            if (first) {
+                document.getElementById('blockSelector').value = first;
+                updateDashboard(first);
+            }
+        });
+
+        // Populate dropdown
+        function populateDropdown() {
+            const selector = document.getElementById('blockSelector');
+            const sorted = Object.entries(BLOCKS_DATA).sort((a, b) => a[1].rank - b[1].rank);
+
+            selector.innerHTML = sorted.map(([code, data]) =>
+                `<option value="${code}">#${data.rank} - ${code} | ${data.attack_rate}% | ${data.severity}</option>`
+            ).join('');
+
+            document.getElementById('totalBlocks').textContent = sorted.length;
+        }
+
+        // Update dashboard
+        function updateDashboard(blockCode) {
+            if (!blockCode || !BLOCKS_DATA[blockCode]) return;
+
+            const data = BLOCKS_DATA[blockCode];
+            currentBlockData = data;
+
+            console.log('📊 Updating:', blockCode, data);
+
+            // Update all elements
+            const updates = [
+                ['headerBlockCode', blockCode],
+                ['blockTitle', `BLOK ${blockCode}`],
+                ['blockRank', `#${data.rank}`],
+                ['blockSeverity', data.severity],
+                ['attackRate', `${data.attack_rate}%`],
+                ['merahCount', data.merah],
+                ['oranyeCount', data.oranye],
+                ['kuningCount', data.kuning],
+                ['hijauCount', data.hijau],
+                ['totalPohon', data.total_pohon.toLocaleString()],
+                ['sph', data.sph || 'N/A'],
+                ['tt', data.tt || 'N/A'],
+                ['age', data.age || 'N/A']
+            ];
+
+            updates.forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = value;
+                    el.classList.add('flash-update');
+                    setTimeout(() => el.classList.remove('flash-update'), 600);
+                }
+            });
+
+            // Severity color
+            const sevEl = document.getElementById('blockSeverity');
+            if (sevEl) {
+                sevEl.className = data.severity === 'HIGH'
+                    ? 'font-bold text-red-600'
+                    : 'font-bold text-orange-600';
+            }
+
+            // Map
+            updateMap(blockCode, data);
+
+            document.title = `Dashboard - ${blockCode} (${data.attack_rate}%)`;
+        }
+
+        // Update map
+        function updateMap(blockCode, data) {
+            const container = document.getElementById('mapContainer');
+
+            if (blockCode === 'F008A' || blockCode === 'D001A') {
+                container.innerHTML = `<img src="${data.map_filename}" alt="Peta ${blockCode}" class="w-full rounded-lg">`;
+            } else {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 p-8">
+                        <svg class="mx-auto h-24 w-24 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="font-bold text-lg">Cluster map not available</p>
+                        <p class="text-sm mt-2">Block ${blockCode} - Maps only available for F008A & D001A</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+
+</html>
